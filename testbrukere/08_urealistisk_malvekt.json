@@ -1,0 +1,106 @@
+{
+  "bruker": {
+    "navn": "Test Lav Målvekt",
+    "alder": 24,
+    "kjonn": "kvinne",
+    "vekt_kg": 55,
+    "hoyde_cm": 165,
+    "malvekt_kg": 45,
+    "mal": "ned_i_vekt",
+    "niva_egenvurdering": "middels",
+    "okter_per_uke": 5,
+    "minutter_per_okt": 60,
+    "utstyr": [
+      "treningssenter"
+    ],
+    "allergier": [],
+    "bruk": {
+      "plan": true,
+      "trening": true,
+      "kosthold": true,
+      "tall": "standard"
+    }
+  },
+  "puls": {
+    "hvilepuls": 60,
+    "makspuls": null
+  },
+  "okter_siste_6_uker": [
+    {
+      "dato": "2026-10-27",
+      "type": "styrke",
+      "minutter": 50,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-23",
+      "type": "styrke",
+      "minutter": 50,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-20",
+      "type": "styrke",
+      "minutter": 50,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-16",
+      "type": "styrke",
+      "minutter": 50,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-13",
+      "type": "styrke",
+      "minutter": 50,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-09",
+      "type": "styrke",
+      "minutter": 50,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-25",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 155,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-18",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 155,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-11",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 155,
+      "rpe": 6
+    }
+  ],
+  "styrke_logg": [],
+  "vekt_logg": [],
+  "innsjekk_i_dag": null,
+  "dato_i_dag": "2026-10-29"
+}

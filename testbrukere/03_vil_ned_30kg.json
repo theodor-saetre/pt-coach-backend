@@ -1,0 +1,95 @@
+{
+  "bruker": {
+    "navn": "Test Ned 30",
+    "alder": 40,
+    "kjonn": "mann",
+    "vekt_kg": 120,
+    "hoyde_cm": 180,
+    "malvekt_kg": 90,
+    "mal": "ned_i_vekt",
+    "niva_egenvurdering": "nybegynner",
+    "okter_per_uke": 4,
+    "minutter_per_okt": 40,
+    "utstyr": [
+      "treningssenter"
+    ],
+    "allergier": [],
+    "bruk": {
+      "plan": true,
+      "trening": true,
+      "kosthold": true,
+      "tall": "standard"
+    }
+  },
+  "puls": {
+    "hvilepuls": 74,
+    "makspuls": null
+  },
+  "okter_siste_6_uker": [
+    {
+      "dato": "2026-10-28",
+      "type": "gange",
+      "minutter": 30,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 3
+    },
+    {
+      "dato": "2026-10-25",
+      "type": "gange",
+      "minutter": 30,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 3
+    },
+    {
+      "dato": "2026-10-21",
+      "type": "gange",
+      "minutter": 30,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 3
+    },
+    {
+      "dato": "2026-10-17",
+      "type": "gange",
+      "minutter": 30,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 3
+    },
+    {
+      "dato": "2026-10-11",
+      "type": "gange",
+      "minutter": 30,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 3
+    },
+    {
+      "dato": "2026-10-04",
+      "type": "gange",
+      "minutter": 30,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 3
+    }
+  ],
+  "styrke_logg": [],
+  "vekt_logg": [
+    {
+      "dato": "2026-10-01",
+      "kg": 121.4
+    },
+    {
+      "dato": "2026-10-15",
+      "kg": 120.6
+    },
+    {
+      "dato": "2026-10-28",
+      "kg": 120.0
+    }
+  ],
+  "innsjekk_i_dag": null,
+  "dato_i_dag": "2026-10-29"
+}

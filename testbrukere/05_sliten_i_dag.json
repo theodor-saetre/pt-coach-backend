@@ -1,0 +1,133 @@
+{
+  "bruker": {
+    "navn": "Test Sliten",
+    "alder": 31,
+    "kjonn": "kvinne",
+    "vekt_kg": 64,
+    "hoyde_cm": 170,
+    "malvekt_kg": null,
+    "mal": "utholdenhet",
+    "niva_egenvurdering": "middels",
+    "okter_per_uke": 4,
+    "minutter_per_okt": 50,
+    "utstyr": [
+      "ingen"
+    ],
+    "allergier": [],
+    "bruk": {
+      "plan": true,
+      "trening": true,
+      "kosthold": true,
+      "tall": "standard"
+    }
+  },
+  "puls": {
+    "hvilepuls": 60,
+    "makspuls": null
+  },
+  "okter_siste_6_uker": [
+    {
+      "dato": "2026-10-28",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-26",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-23",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-21",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-19",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-16",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-14",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-12",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-09",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-07",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-05",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-02",
+      "type": "lop",
+      "minutter": 42,
+      "km": 7,
+      "snittpuls": 150,
+      "rpe": 5
+    }
+  ],
+  "styrke_logg": [],
+  "vekt_logg": [],
+  "innsjekk_i_dag": {
+    "folelse": "sliten",
+    "sovn": "darlig"
+  },
+  "dato_i_dag": "2026-10-29"
+}

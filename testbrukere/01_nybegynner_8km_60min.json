@@ -1,0 +1,90 @@
+{
+  "bruker": {
+    "navn": "Test Nybegynner",
+    "alder": 34,
+    "kjonn": "kvinne",
+    "vekt_kg": 82,
+    "hoyde_cm": 168,
+    "malvekt_kg": null,
+    "mal": "holde_formen",
+    "niva_egenvurdering": "nybegynner",
+    "okter_per_uke": 3,
+    "minutter_per_okt": 45,
+    "utstyr": [
+      "ingen"
+    ],
+    "allergier": [],
+    "bruk": {
+      "plan": true,
+      "trening": true,
+      "kosthold": true,
+      "tall": "standard"
+    }
+  },
+  "puls": {
+    "hvilepuls": 68,
+    "makspuls": null
+  },
+  "okter_siste_6_uker": [
+    {
+      "dato": "2026-10-27",
+      "type": "lop",
+      "minutter": 60,
+      "km": 8,
+      "snittpuls": 158,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-23",
+      "type": "lop",
+      "minutter": 60,
+      "km": 8,
+      "snittpuls": 158,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-19",
+      "type": "lop",
+      "minutter": 60,
+      "km": 8,
+      "snittpuls": 158,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-14",
+      "type": "lop",
+      "minutter": 38,
+      "km": 5,
+      "snittpuls": 158,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-09",
+      "type": "lop",
+      "minutter": 60,
+      "km": 8,
+      "snittpuls": 158,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-03",
+      "type": "lop",
+      "minutter": 60,
+      "km": 8,
+      "snittpuls": 158,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-09-26",
+      "type": "lop",
+      "minutter": 38,
+      "km": 5,
+      "snittpuls": 158,
+      "rpe": 6
+    }
+  ],
+  "styrke_logg": [],
+  "vekt_logg": [],
+  "innsjekk_i_dag": null,
+  "dato_i_dag": "2026-10-29"
+}

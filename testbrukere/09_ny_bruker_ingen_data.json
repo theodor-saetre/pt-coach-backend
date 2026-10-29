@@ -1,0 +1,33 @@
+{
+  "bruker": {
+    "navn": "Test Ny",
+    "alder": 52,
+    "kjonn": "ukjent",
+    "vekt_kg": 90,
+    "hoyde_cm": 175,
+    "malvekt_kg": null,
+    "mal": "holde_formen",
+    "niva_egenvurdering": "nybegynner",
+    "okter_per_uke": 3,
+    "minutter_per_okt": 30,
+    "utstyr": [
+      "ingen"
+    ],
+    "allergier": [],
+    "bruk": {
+      "plan": true,
+      "trening": true,
+      "kosthold": true,
+      "tall": "enkel"
+    }
+  },
+  "puls": {
+    "hvilepuls": 60,
+    "makspuls": null
+  },
+  "okter_siste_6_uker": [],
+  "styrke_logg": [],
+  "vekt_logg": [],
+  "innsjekk_i_dag": null,
+  "dato_i_dag": "2026-10-29"
+}

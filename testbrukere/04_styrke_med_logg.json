@@ -1,0 +1,199 @@
+{
+  "bruker": {
+    "navn": "Test Styrke",
+    "alder": 23,
+    "kjonn": "mann",
+    "vekt_kg": 78,
+    "hoyde_cm": 183,
+    "malvekt_kg": null,
+    "mal": "styrke",
+    "niva_egenvurdering": "middels",
+    "okter_per_uke": 4,
+    "minutter_per_okt": 60,
+    "utstyr": [
+      "treningssenter"
+    ],
+    "allergier": [
+      "laktose"
+    ],
+    "bruk": {
+      "plan": true,
+      "trening": true,
+      "kosthold": true,
+      "tall": "standard"
+    }
+  },
+  "puls": {
+    "hvilepuls": 60,
+    "makspuls": null
+  },
+  "okter_siste_6_uker": [
+    {
+      "dato": "2026-10-27",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-25",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-22",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-20",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-18",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-15",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-13",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-11",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-08",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-06",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-04",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-01",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-24",
+      "type": "lop",
+      "minutter": 28,
+      "km": 5,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-10",
+      "type": "lop",
+      "minutter": 29,
+      "km": 5,
+      "snittpuls": 150,
+      "rpe": 5
+    }
+  ],
+  "styrke_logg": [
+    {
+      "dato": "2026-10-20",
+      "ovelse": "Benkpress",
+      "kg": 57.5,
+      "reps": [
+        10,
+        9,
+        9
+      ]
+    },
+    {
+      "dato": "2026-10-27",
+      "ovelse": "Benkpress",
+      "kg": 57.5,
+      "reps": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "dato": "2026-10-27",
+      "ovelse": "Roing med stang",
+      "kg": 50,
+      "reps": [
+        10,
+        9,
+        8
+      ]
+    },
+    {
+      "dato": "2026-10-25",
+      "ovelse": "Knebøy",
+      "kg": 80,
+      "reps": [
+        8,
+        7,
+        6
+      ]
+    },
+    {
+      "dato": "2026-10-25",
+      "ovelse": "Skulderpress manualer",
+      "kg": 16,
+      "reps": [
+        10,
+        10,
+        10
+      ]
+    }
+  ],
+  "vekt_logg": [],
+  "innsjekk_i_dag": null,
+  "dato_i_dag": "2026-10-29"
+}

@@ -1,0 +1,130 @@
+{
+  "bruker": {
+    "navn": "Test Overivrig",
+    "alder": 27,
+    "kjonn": "mann",
+    "vekt_kg": 80,
+    "hoyde_cm": 185,
+    "malvekt_kg": null,
+    "mal": "utholdenhet",
+    "niva_egenvurdering": "middels",
+    "okter_per_uke": 5,
+    "minutter_per_okt": 60,
+    "utstyr": [
+      "ingen"
+    ],
+    "allergier": [],
+    "bruk": {
+      "plan": true,
+      "trening": true,
+      "kosthold": true,
+      "tall": "standard"
+    }
+  },
+  "puls": {
+    "hvilepuls": 60,
+    "makspuls": null
+  },
+  "okter_siste_6_uker": [
+    {
+      "dato": "2026-10-20",
+      "type": "lop",
+      "minutter": 30,
+      "km": 5,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-16",
+      "type": "lop",
+      "minutter": 30,
+      "km": 5,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-13",
+      "type": "lop",
+      "minutter": 30,
+      "km": 5,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-09",
+      "type": "lop",
+      "minutter": 30,
+      "km": 5,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-06",
+      "type": "lop",
+      "minutter": 30,
+      "km": 5,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-02",
+      "type": "lop",
+      "minutter": 30,
+      "km": 5,
+      "snittpuls": 150,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-29",
+      "type": "lop",
+      "minutter": 70,
+      "km": 12,
+      "snittpuls": 160,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-28",
+      "type": "lop",
+      "minutter": 70,
+      "km": 12,
+      "snittpuls": 160,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-27",
+      "type": "lop",
+      "minutter": 70,
+      "km": 12,
+      "snittpuls": 160,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-25",
+      "type": "lop",
+      "minutter": 70,
+      "km": 12,
+      "snittpuls": 160,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-24",
+      "type": "lop",
+      "minutter": 70,
+      "km": 12,
+      "snittpuls": 160,
+      "rpe": 7
+    },
+    {
+      "dato": "2026-10-23",
+      "type": "lop",
+      "minutter": 70,
+      "km": 12,
+      "snittpuls": 160,
+      "rpe": 7
+    }
+  ],
+  "styrke_logg": [],
+  "vekt_logg": [],
+  "innsjekk_i_dag": null,
+  "dato_i_dag": "2026-10-29"
+}

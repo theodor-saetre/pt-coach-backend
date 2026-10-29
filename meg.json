@@ -1,0 +1,72 @@
+{
+  "bruker": {
+    "navn": "Ditt navn",
+    "alder": 23,
+    "kjonn": "mann",
+    "vekt_kg": 80,
+    "hoyde_cm": 182,
+    "malvekt_kg": null,
+    "mal": "holde_formen",
+    "niva_egenvurdering": "middels",
+    "okter_per_uke": 4,
+    "minutter_per_okt": 60,
+    "utstyr": [
+      "treningssenter"
+    ],
+    "allergier": [],
+    "bruk": {
+      "plan": true,
+      "trening": true,
+      "kosthold": true,
+      "tall": "standard"
+    }
+  },
+  "puls": {
+    "hvilepuls": 55,
+    "makspuls": null
+  },
+  "okter_siste_6_uker": [
+    {
+      "dato": "2026-10-27",
+      "type": "lop",
+      "minutter": 45,
+      "km": 8,
+      "snittpuls": 155,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-25",
+      "type": "padel",
+      "minutter": 90,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-23",
+      "type": "styrke",
+      "minutter": 60,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 7
+    }
+  ],
+  "styrke_logg": [
+    {
+      "dato": "2026-10-23",
+      "ovelse": "Benkpress",
+      "kg": 70,
+      "reps": [
+        10,
+        9,
+        8
+      ]
+    }
+  ],
+  "vekt_logg": [],
+  "innsjekk_i_dag": {
+    "folelse": "ok",
+    "sovn": "god"
+  },
+  "dato_i_dag": "2026-10-29"
+}

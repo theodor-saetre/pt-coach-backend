@@ -1,0 +1,101 @@
+{
+  "bruker": {
+    "navn": "Test Syk",
+    "alder": 45,
+    "kjonn": "mann",
+    "vekt_kg": 85,
+    "hoyde_cm": 178,
+    "malvekt_kg": null,
+    "mal": "holde_formen",
+    "niva_egenvurdering": "middels",
+    "okter_per_uke": 3,
+    "minutter_per_okt": 45,
+    "utstyr": [
+      "ingen"
+    ],
+    "allergier": [],
+    "bruk": {
+      "plan": true,
+      "trening": true,
+      "kosthold": true,
+      "tall": "standard"
+    }
+  },
+  "puls": {
+    "hvilepuls": 60,
+    "makspuls": null
+  },
+  "okter_siste_6_uker": [
+    {
+      "dato": "2026-10-27",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 148,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-24",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 148,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-20",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 148,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-17",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 148,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-13",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 148,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-10",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 148,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-06",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 148,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-03",
+      "type": "lop",
+      "minutter": 36,
+      "km": 6,
+      "snittpuls": 148,
+      "rpe": 5
+    }
+  ],
+  "styrke_logg": [],
+  "vekt_logg": [],
+  "innsjekk_i_dag": {
+    "folelse": "syk",
+    "sovn": "ok"
+  },
+  "dato_i_dag": "2026-10-29"
+}
