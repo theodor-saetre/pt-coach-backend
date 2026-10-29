@@ -68,11 +68,12 @@ Hver plan koster litt. Følg med på forbruket i konsollen.
 | `coach/sjekk.py` | Kontrollen, og utregning av mat per dag |
 | `coach/ai.py` | Kobler alt sammen og kaller Claude |
 | `coach/uten_ai.py` | Enkel reserveplan bare fra reglene (testmodus) |
-| `testbrukere/` | 10 oppdiktede brukere som tester ulike situasjoner |
+| `testbrukere/` | 12 oppdiktede brukere som tester ulike situasjoner |
 | `meg.json` | Mal for deg selv. Bytt ut tallene med dine egne. |
 | `docs/avtale.md` | Formatet appen sender inn og får tilbake |
 | `lag_plan.py` | Lag plan for én bruker |
 | `kjor_tester.py` | Kjør alle testbrukerne og lag rapport |
+| `chat.py` + `coach/chat.py` | Chat med coachen. Foreløpig: si at du er syk, frisk, sliten eller pigg, og få ny plan |
 
 ## Det du kan jobbe med nå
 

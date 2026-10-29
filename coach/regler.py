@@ -11,7 +11,9 @@ kommer herfra. Vil du endre en regel, gjør du det her, ikke i instruksen.
 
 from __future__ import annotations
 
+import math
 from datetime import date, timedelta
+from statistics import median
 
 # ---------------------------------------------------------------------------
 # Sperrer. Endre bare hvis du har et faglig grunnlag for det.
@@ -19,11 +21,24 @@ from datetime import date, timedelta
 MAKS_UNDERSKUDD_KCAL = 500        # aldri mer enn dette per dag (ca. 0,5 kg i uka)
 MAKS_UNDERSKUDD_ANDEL = 0.20      # og aldri mer enn 20 % av dagsbehovet
 OVERSKUDD_STYRKE_KCAL = 200       # lite overskudd ved mål om å bygge muskler
-STOR_VEKTNEDGANG_KG = 20          # over dette: anbefal å snakke med fastlegen
+# Vektmål regnes i prosent av kroppsvekten, ikke i kg: 30 kg er mye mer for en på 80 kg enn for en på 140 kg.
+# Helsedirektoratet, NICE og ACSM: 5–10 % ned gir helsegevinst og er et realistisk første mål.
+STOR_VEKTNEDGANG_ANDEL = 0.10     # over 10 % av kroppsvekten: anbefal å snakke med fastlegen
+DELMAL_ANDEL = 0.05               # første delmål: 5 % ned
+FASTLEGE_KMI = 35                 # fra denne KMI-en: anbefal fastlegen ved vektnedgang uansett mål
 BELASTNING_FORHOYET = 1.3        # forhold 7 dager mot snitt av 28 dager: ikke øk mer
 BELASTNING_HOY = 1.5              # over dette: trapp ned (økt skaderisiko)
 BELASTNING_LAV = 0.8
 MAKS_OKNING_UKE = 1.10            # maks 10 % mer treningstid enn snittet
+IKKE_BAKOVER_ANDEL = 0.9          # lengste kondisjonsøkt skal være minst 90 % av det brukeren pleier
+SAMMENHENGENDE_LOP_MIN = 20       # har løpt så lenge i strekk: ikke gå-jogg lenger
+
+# Sykdom (Olympiatoppen og ACSM: hvile når du er syk, trapp rolig opp etterpå)
+SYK_HVILEDAGER = 2                # hvile i dag og i morgen
+SYK_ANDEL_AV_SNITT = 0.5          # resten av en sykeuke: maks halvparten av vanlig treningstid
+SYK_ANDEL_AV_OKT = 0.75           # og hver økt maks 75 % av en vanlig økt
+TILBAKE_DAGER = 7                 # så lenge etter at brukeren er frisk gjelder «tilbake etter sykdom»
+TILBAKE_ANDEL_AV_SNITT = 0.75     # maks 75 % av vanlig treningstid, ingen harde økter
 
 # Hvor anstrengende en økt er når brukeren ikke har oppgitt det (1–10)
 STANDARD_RPE = {"lop": 5, "styrke": 6, "sykkel": 5, "padel": 6, "fotball": 7, "gange": 2, "annet": 5}
@@ -78,19 +93,13 @@ def energi_og_dagsmal(bruker: dict) -> dict:
     malvekt = bruker.get("malvekt_kg")
     hoyde_m = hoyde / 100
 
-    if malvekt:
-        bmi_mal = malvekt / hoyde_m**2
-        if bmi_mal < 18.5:
-            varsler.append(
-                "Målvekten er under normalvekt for høyden. Ikke lag vektnedgangsplan mot dette målet, "
-                "og anbefal å snakke med fastlegen om hva som er riktig."
-            )
-            if mal == "ned_i_vekt":
-                mal = "holde_formen"
-        elif vekt - malvekt > STOR_VEKTNEDGANG_KG:
-            varsler.append(
-                f"Målet er å gå ned over {STOR_VEKTNEDGANG_KG} kg. Anbefal å snakke med fastlegen før start."
-            )
+    if malvekt and malvekt / hoyde_m**2 < 18.5:
+        varsler.append(
+            "Målvekten er under normalvekt for høyden. Ikke lag vektnedgangsplan mot dette målet, "
+            "og anbefal å snakke med fastlegen om hva som er riktig."
+        )
+        if mal == "ned_i_vekt":
+            mal = "holde_formen"
 
     if mal == "ned_i_vekt":
         underskudd = round(min(MAKS_UNDERSKUDD_KCAL, hverdag * MAKS_UNDERSKUDD_ANDEL))
@@ -102,6 +111,16 @@ def energi_og_dagsmal(bruker: dict) -> dict:
     if kcal_hviledag < bmr:
         kcal_hviledag = bmr
         underskudd = round(hverdag - bmr)
+
+    vektmal = None
+    if mal == "ned_i_vekt" and malvekt and malvekt < vekt and underskudd:
+        vektmal = _vektmal(vekt, malvekt, vekt / hoyde_m**2, underskudd * 7 / 7700)
+        if vektmal["stort_mal"]:
+            varsler.append(
+                f"Målet er å gå ned {vektmal['ned_kg']:g} kg, som er {vektmal['andel_prosent']} % av kroppsvekten. "
+                "Anbefal å snakke med fastlegen før start. Del målet opp: første delmål er "
+                f"{vektmal['delmal_kg']} kg, som allerede gir helsegevinst og tar ca. {vektmal['uker_til_delmal']} uker."
+            )
 
     # Protein: per kg, men regnet fra en vekt som tilsvarer KMI 25 ved høy kroppsvekt,
     # så tallet ikke blir urimelig høyt.
@@ -122,7 +141,23 @@ def energi_og_dagsmal(bruker: dict) -> dict:
         "hviledag": makro(kcal_hviledag),
         "regel_treningsdag": "Legg kcal for dagens økt(er) til hviledagsmålet, som karbohydrater.",
         "forventet_vektendring_kg_per_uke": round(-underskudd * 7 / 7700, 2) if underskudd else 0.0,
+        "vektmal": vektmal,
         "varsler": varsler,
+    }
+
+
+def _vektmal(vekt: float, malvekt: float, kmi: float, kg_per_uke: float) -> dict:
+    """Vektmålet i prosent av kroppsvekten, med et første delmål på 5 % og hvor lang tid det tar."""
+    ned = round(vekt - malvekt, 1)
+    andel = ned / vekt
+    delmal = max(round(malvekt), round(vekt * (1 - DELMAL_ANDEL)))
+    return {
+        "ned_kg": ned,
+        "andel_prosent": round(andel * 100),
+        "stort_mal": andel > STOR_VEKTNEDGANG_ANDEL or kmi >= FASTLEGE_KMI,
+        "delmal_kg": delmal,
+        "uker_til_delmal": math.ceil((vekt - delmal) / kg_per_uke),
+        "uker_til_malvekt": math.ceil(ned / kg_per_uke),
     }
 
 
@@ -151,12 +186,15 @@ def pulssoner(bruker: dict, puls: dict) -> dict:
 # 3. Løpenivå fra tempo (8 km på 30 min og på 60 min gir helt ulike planer)
 # ---------------------------------------------------------------------------
 def lopeniva(okter: list[dict], bruker: dict, i_dag: date) -> dict:
+    # Lengste løpetur viser om brukeren allerede løper sammenhengende. Da er gå-jogg et steg tilbake.
+    lengste = max((o.get("minutter") or 0 for o in okter if o.get("type") == "lop"), default=0)
     lop = [o for o in okter if o.get("type") == "lop" and o.get("km") and o.get("minutter") and o["km"] >= 3]
     if not lop:
         egen = bruker.get("niva_egenvurdering", "nybegynner")
         return {
             "har_data": False,
             "niva": egen,
+            "lengste_lop_min": lengste,
             "forklaring": "Ingen løpeturer med distanse ennå. Bruk brukerens egen vurdering og styr på følelse "
                           "(rolig = kan prate). Be om én registrert tur for å finne nivået.",
         }
@@ -189,14 +227,15 @@ def lopeniva(okter: list[dict], bruker: dict, i_dag: date) -> dict:
         "terskel_tempo": _tempo_tekst(tempo_10k * 1.04),
         "intervall_tempo": _tempo_tekst(tempo_10k * 0.97),
         "snitt_km_per_uke_siste_4_uker": km_uke,
-        "gaa_jogg_anbefales": minutter_10k > 75,
+        "lengste_lop_min": lengste,
+        "gaa_jogg_anbefales": minutter_10k > 75 and lengste < SAMMENHENGENDE_LOP_MIN,
     }
 
 
 # ---------------------------------------------------------------------------
 # 4. Belastning: siste 7 dager mot snittet av siste 28 dager
 # ---------------------------------------------------------------------------
-def belastning(okter: list[dict], i_dag: date, bruker: dict) -> dict:
+def belastning(okter: list[dict], i_dag: date, bruker: dict, sykdom: str | None = None) -> dict:
     def last(o: dict) -> float:
         rpe = o.get("rpe") or STANDARD_RPE.get(o.get("type", "annet"), 5)
         return o["minutter"] * rpe
@@ -245,12 +284,40 @@ def belastning(okter: list[dict], i_dag: date, bruker: dict) -> dict:
     elif status in ("forhoyet", "ny"):
         maks_harde = min(maks_harde, 1)
 
+    # Hva brukeren pleier: vanlig lengde på økter og på kondisjonsøkter (løp, gange, sykkel)
+    alle = [o["minutter"] for o in siste_28 if o.get("minutter")]
+    kondisjon = [o["minutter"] for o in siste_28 if o.get("minutter") and o.get("type") in ("lop", "gange", "sykkel")]
+    vanlig_okt = round(median(alle)) if alle else None
+    vanlig_kondisjon = round(median(kondisjon)) if kondisjon else None
+
+    # Sykdom overstyrer alt over: ingen harde økter og mindre trening
+    maks_per_okt = None
+    if sykdom == "syk":
+        maks_harde = 0
+        maks_min = min(maks_min, round(min_uke_snitt * SYK_ANDEL_AV_SNITT))
+        maks_per_okt = round(vanlig_okt * SYK_ANDEL_AV_OKT) if vanlig_okt else None
+    elif sykdom == "tilbake":
+        maks_harde = 0
+        maks_min = min(maks_min, round(min_uke_snitt * TILBAKE_ANDEL_AV_SNITT))
+        maks_per_okt = vanlig_okt
+
+    # Ikke gå bakover: lengste kondisjonsøkt skal være omtrent like lang som det brukeren pleier,
+    # så lenge brukeren ikke er syk eller har trent for mye, og det er tid til det.
+    min_lengste = None
+    if vanlig_kondisjon and sykdom is None and status in ("trygg", "lav", "forhoyet"):
+        min_lengste = min(round(vanlig_kondisjon * IKKE_BAKOVER_ANDEL),
+                          int(bruker.get("minutter_per_okt", 45)), maks_min)
+
     return {
         "akutt_7d": round(akutt), "kronisk_snitt_28d": round(kronisk), "forhold": ratio, "status": status,
         "snitt_minutter_per_uke": round(min_uke_snitt),
+        "vanlig_okt_min": vanlig_okt,
+        "vanlig_kondisjonsokt_min": vanlig_kondisjon,
         "maks_minutter_neste_7_dager": maks_min,
         "maks_harde_okter_neste_7_dager": maks_harde,
         "maks_okter_neste_7_dager": int(bruker.get("okter_per_uke", 3)),
+        "maks_minutter_per_okt": maks_per_okt,
+        "min_lengste_kondisjonsokt_min": min_lengste,
     }
 
 
@@ -283,17 +350,41 @@ def styrke_neste(styrke_logg: list[dict]) -> list[dict]:
 # ---------------------------------------------------------------------------
 # 6. Dagens innsjekk
 # ---------------------------------------------------------------------------
-def dagens_justering(innsjekk: dict | None) -> dict:
-    if not innsjekk:
-        return {"regel": "ingen innsjekk", "tillatt_i_dag": "som planlagt"}
+def sykdomsstatus(bilde: dict, i_dag: date) -> str | None:
+    """
+    «syk», «tilbake» (frisk igjen for under en uke siden) eller None.
+    Brukeren sier fra i innsjekken eller i chatten; da oppdateres `sykdom` (se docs/avtale.md).
+    """
+    folelse = (bilde.get("innsjekk_i_dag") or {}).get("folelse")
+    sykdom = bilde.get("sykdom") or {}
+    if folelse == "syk" or (sykdom.get("syk_fra") and not sykdom.get("frisk_fra")):
+        return "syk"
+    frisk_fra = sykdom.get("frisk_fra")
+    if folelse == "frisk" or (frisk_fra and 0 <= (i_dag - _dato(frisk_fra)).days < TILBAKE_DAGER):
+        return "tilbake"
+    return None
+
+
+def dagens_justering(innsjekk: dict | None, sykdom: str | None = None) -> dict:
+    innsjekk = innsjekk or {}
     folelse = innsjekk.get("folelse")
     sovn = innsjekk.get("sovn")
-    if folelse == "syk":
-        return {"regel": "syk", "tillatt_i_dag": "hvile",
-                "melding": "Ingen trening i dag. Aldri tren med feber. Kontakt lege ved vedvarende sykdom."}
+    if sykdom == "syk":
+        return {"regel": "syk", "tillatt_i_dag": "hvile", "hviledager_forst": SYK_HVILEDAGER,
+                "melding": "Ingen trening i dag og i morgen. Aldri tren med feber. Øktene senere i uka er foreløpige: "
+                           "si fra i chatten når du er frisk, så lager jeg en ny plan. "
+                           "Kontakt lege ved vedvarende sykdom."}
+    if sykdom == "tilbake" and folelse == "frisk":
+        return {"regel": "frisk igjen etter sykdom", "tillatt_i_dag": "bare rolig (første dag etter sykdom)",
+                "hviledager_forst": 0,
+                "melding": "Godt at du er frisk igjen. Vi starter rolig og kortere enn vanlig, uten harde økter denne uka. "
+                           "Kommer feber eller sykdomsfølelse tilbake, hviler du og sier fra."}
+    if not folelse and not sovn:
+        return {"regel": "ingen innsjekk", "tillatt_i_dag": "som planlagt", "hviledager_forst": 0}
     if folelse == "sliten" or sovn == "darlig":
-        return {"regel": "sliten eller dårlig søvn", "tillatt_i_dag": "bare rolig og kortere (maks 75 % av planlagt tid)"}
-    return {"regel": "i form", "tillatt_i_dag": "som planlagt"}
+        return {"regel": "sliten eller dårlig søvn", "tillatt_i_dag": "bare rolig og kortere (maks 75 % av planlagt tid)",
+                "hviledager_forst": 0}
+    return {"regel": "i form", "tillatt_i_dag": "som planlagt", "hviledager_forst": 0}
 
 
 SKANSOM_KMI = 35  # fra denne KMI-en: start med gange, sykkel og styrke i stedet for løping
@@ -326,6 +417,7 @@ def beregn_fakta(bilde: dict) -> dict:
 
     dager = [{"dato": (i_dag + timedelta(days=i)).isoformat(),
               "dag": UKEDAGER[(i_dag + timedelta(days=i)).weekday()]} for i in range(7)]
+    sykdom = sykdomsstatus(bilde, i_dag)
 
     return {
         "dager_i_planen": dager,
@@ -333,8 +425,9 @@ def beregn_fakta(bilde: dict) -> dict:
         "energi": energi_og_dagsmal(bruker),
         "puls": pulssoner(bruker, bilde.get("puls", {})),
         "lop": _lop_med_sperrer(lopeniva(okter, bruker, i_dag), bruker),
-        "belastning": belastning(okter, i_dag, bruker),
+        "belastning": belastning(okter, i_dag, bruker, sykdom),
         "styrke": styrke_neste(bilde.get("styrke_logg", [])),
-        "i_dag": dagens_justering(bilde.get("innsjekk_i_dag")),
+        "sykdom": sykdom,
+        "i_dag": dagens_justering(bilde.get("innsjekk_i_dag"), sykdom),
         "vekt_kg": bruker["vekt_kg"],
     }

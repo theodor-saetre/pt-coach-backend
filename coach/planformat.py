@@ -30,7 +30,21 @@ PLAN_SKJEMA = {
                     "intensitet": {"type": "string", "enum": INTENSITETER},
                     "pulssone": {"type": "string", "description": "F.eks. '2', '1-2', '4'. Tom streng hvis ikke relevant."},
                     "tempo": {"type": "string", "description": "Fra fakta.lop hvis løping og data finnes, ellers tom streng."},
-                    "beskrivelse": {"type": "string", "description": "1–2 setninger: hva økta er og hvordan den skal føles."},
+                    "beskrivelse": {"type": "string", "description": "1–2 setninger: hvordan økta skal føles. Ingen minuttall her, de står i deler."},
+                    "deler": {
+                        "type": "array",
+                        "description": "Delene i økta, i rekkefølge. Summen av minutter × ganger må bli nøyaktig lik minutter. Tom liste på hviledager.",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "tekst": {"type": "string", "description": "F.eks. 'Rask gange', '2 min jogg + 1 min gange', 'Rolig løp'."},
+                                "minutter": {"type": "integer", "description": "Minutter for én runde av denne delen."},
+                                "ganger": {"type": "integer", "description": "Hvor mange ganger delen gjentas. 1 hvis den ikke gjentas."},
+                            },
+                            "required": ["tekst", "minutter", "ganger"],
+                            "additionalProperties": False,
+                        },
+                    },
                     "ovelser": {
                         "type": "array",
                         "description": "Bare for styrke. Tom liste ellers.",
@@ -48,7 +62,7 @@ PLAN_SKJEMA = {
                         },
                     },
                 },
-                "required": ["dato", "dag", "type", "tittel", "minutter", "intensitet", "pulssone", "tempo", "beskrivelse", "ovelser"],
+                "required": ["dato", "dag", "type", "tittel", "minutter", "intensitet", "pulssone", "tempo", "beskrivelse", "deler", "ovelser"],
                 "additionalProperties": False,
             },
         },

@@ -1,0 +1,99 @@
+{
+  "bruker": {
+    "navn": "Test Ned 18 Lett",
+    "alder": 35,
+    "kjonn": "kvinne",
+    "vekt_kg": 80,
+    "hoyde_cm": 170,
+    "malvekt_kg": 62,
+    "mal": "ned_i_vekt",
+    "niva_egenvurdering": "middels",
+    "okter_per_uke": 3,
+    "minutter_per_okt": 45,
+    "utstyr": [
+      "treningssenter"
+    ],
+    "allergier": [],
+    "bruk": {
+      "plan": true,
+      "trening": true,
+      "kosthold": true,
+      "tall": "standard"
+    }
+  },
+  "puls": {
+    "hvilepuls": 66,
+    "makspuls": null
+  },
+  "okter_siste_6_uker": [
+    {
+      "dato": "2026-10-27",
+      "type": "lop",
+      "minutter": 35,
+      "km": 5,
+      "snittpuls": null,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-24",
+      "type": "styrke",
+      "minutter": 40,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-20",
+      "type": "lop",
+      "minutter": 35,
+      "km": 5,
+      "snittpuls": null,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-17",
+      "type": "styrke",
+      "minutter": 40,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-13",
+      "type": "lop",
+      "minutter": 35,
+      "km": 5,
+      "snittpuls": null,
+      "rpe": 5
+    },
+    {
+      "dato": "2026-10-10",
+      "type": "styrke",
+      "minutter": 40,
+      "km": null,
+      "snittpuls": null,
+      "rpe": 6
+    },
+    {
+      "dato": "2026-10-06",
+      "type": "lop",
+      "minutter": 35,
+      "km": 5,
+      "snittpuls": null,
+      "rpe": 5
+    }
+  ],
+  "styrke_logg": [],
+  "vekt_logg": [
+    {
+      "dato": "2026-10-01",
+      "kg": 80.6
+    },
+    {
+      "dato": "2026-10-28",
+      "kg": 80.0
+    }
+  ],
+  "innsjekk_i_dag": null,
+  "dato_i_dag": "2026-10-29"
+}

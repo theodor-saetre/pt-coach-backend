@@ -21,7 +21,8 @@ Eksempel: `meg.json` og filene i `testbrukere/`.
 | `okter_siste_6_uker[]` | `dato`, `type` (`lop`, `styrke`, `sykkel`, `padel`, `fotball`, `gange`, `annet`), `minutter`, `km`, `snittpuls`, `rpe` (1–10, hvor tungt det føltes). Ukjent = `null` |
 | `styrke_logg[]` | `dato`, `ovelse`, `kg`, `reps` (liste, ett tall per sett). Valgfritt: `rep_fra`, `rep_til`, `steg_kg` |
 | `vekt_logg[]` | `dato`, `kg` |
-| `innsjekk_i_dag` | `folelse` (`pigg`, `ok`, `sliten`, `syk`) og `sovn` (`god`, `ok`, `darlig`), eller `null` |
+| `innsjekk_i_dag` | `folelse` (`pigg`, `ok`, `sliten`, `syk`, `frisk` = frisk igjen etter sykdom) og `sovn` (`god`, `ok`, `darlig`), eller `null` |
+| `sykdom` | Valgfritt. `syk_fra` og `frisk_fra` (`ÅÅÅÅ-MM-DD` eller `null`). Settes av chatten når brukeren sier «syk» eller «frisk». `frisk_fra` = `null` betyr fortsatt syk. Uka etter `frisk_fra` gjelder «tilbake etter sykdom» |
 | `dato_i_dag` | `ÅÅÅÅ-MM-DD` |
 
 Navn, e-post og telefon fjernes før noe sendes til Claude.
@@ -41,6 +42,7 @@ Navn, e-post og telefon fjernes før noe sendes til Claude.
         "type": "lop", "tittel": "Rolig løp", "minutter": 40,
         "intensitet": "rolig", "pulssone": "2", "tempo": "6:10/km–6:40/km",
         "beskrivelse": "Du skal kunne prate hele veien.",
+        "deler": [{"tekst": "Rolig og jevnt", "minutter": 40, "ganger": 1}],
         "ovelser": [],
         "kosthold": {"kcal": 2900, "protein_g": 112, "karbo_g": 380, "fett_g": 90, "herav_trening_kcal": 420}
       }
@@ -54,6 +56,13 @@ Navn, e-post og telefon fjernes før noe sendes til Claude.
 ```
 
 - `dager` har alltid 7 dager, og dag 1 er i dag.
+- `deler` er øktas deler i rekkefølge (`tekst`, `minutter`, `ganger`). Summen av `minutter × ganger` er alltid lik `minutter`, så appen kan bruke dem som timer. Tom liste på hviledager.
 - For styrke inneholder `ovelser` `navn`, `sett`, `reps` (f.eks. `"8-10"`), `kg` (0 = velg selv) og `tips`.
 - `kosthold` regnes ut av koden, ikke av AI-en. Den mangler hvis brukeren har skrudd av kosthold.
+
+## Chat: dagsform
+
+`coach.chat.tolk_melding(tekst)` gir `{"dagsform": "syk" | "frisk" | "sliten" | "pigg" | "ok" | "ingen", "svar": "..."}`.
+`coach.chat.oppdater_bilde(bilde, dagsform)` legger det inn i `innsjekk_i_dag` og `sykdom`. Appen lagrer bildet og ber om ny plan.
+
 - Er `godkjent` usann, skal appen vise en enkel reserveplan (`py lag_plan.py ... --uten-ai`) i stedet.

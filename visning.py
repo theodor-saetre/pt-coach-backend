@@ -20,7 +20,9 @@ def plan_som_tekst(resultat: dict, tittel: str = "") -> str:
         f"{b['maks_okter_neste_7_dager']} økter, {b['maks_harde_okter_neste_7_dager']} harde",
         f"- Mat hviledag: {e['hviledag']['kcal']} kcal · {e['hviledag']['protein_g']} g protein"
         + (f" · underskudd {e['underskudd_kcal']} kcal (ca. {abs(e['forventet_vektendring_kg_per_uke'])} kg/uke)" if e["underskudd_kcal"] else ""),
-        f"- I dag: {fakta['i_dag']['tillatt_i_dag']}",
+        *([f"- Vektmål: ned {e['vektmal']['ned_kg']:g} kg ({e['vektmal']['andel_prosent']} %), delmål {e['vektmal']['delmal_kg']} kg "
+           f"om ca. {e['vektmal']['uker_til_delmal']} uker, mål om ca. {e['vektmal']['uker_til_malvekt']} uker"] if e.get("vektmal") else []),
+        f"- I dag: {fakta['i_dag']['tillatt_i_dag']}" + (f" · sykdom: {fakta['sykdom']}" if fakta.get("sykdom") else ""),
         "",
         f"**PT:** {plan['pt_melding']}",
         "",
@@ -34,8 +36,13 @@ def plan_som_tekst(resultat: dict, tittel: str = "") -> str:
         linjer.append(f"| {d['dag']} {d['dato'][5:]} | {d['tittel']} | {d['minutter']} | {d['intensitet']} | {sone} | {mat_txt} |")
         if d["beskrivelse"] and d["type"] != "hvile":
             linjer.append(f"|  | _{d['beskrivelse']}_ |  |  |  |  |")
+        if d.get("deler") and d["type"] != "hvile":
+            deler = " + ".join(f"{x['ganger']} × {x['minutter']} min {x['tekst']}" if x["ganger"] > 1
+                               else f"{x['minutter']} min {x['tekst']}" for x in d["deler"])
+            sum_min = sum(x["minutter"] * x["ganger"] for x in d["deler"])
+            linjer.append(f"|  | {deler} = {sum_min} min |  |  |  |  |")
         for o in d.get("ovelser", []):
-            kg = f"{o['kg']:g} kg" if o["kg"] else "egen vekt / velg selv"
+            kg = f"{o['kg']:g} kg" if o["kg"] else "velg vekt selv"
             linjer.append(f"|  | · {o['navn']}: {o['sett']} × {o['reps']}, {kg} |  |  |  |  |")
     linjer.append("")
     if plan.get("hvorfor"):

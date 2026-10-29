@@ -20,13 +20,17 @@ STANDARD_STYRKE = [
 def lag_plan_uten_ai(fakta: dict, bruker: dict) -> dict:
     b = fakta["belastning"]
     mal = fakta["energi"]["mal_brukt"]
-    # Færre økter heller enn for korte økter: minst 20 min per økt, innenfor maks totaltid
-    antall = min(b["maks_okter_neste_7_dager"], max(1, b["maks_minutter_neste_7_dager"] // 20))
-    per_okt = max(20, min(int(bruker.get("minutter_per_okt", 45)), b["maks_minutter_neste_7_dager"] // antall))
+    # Færre økter heller enn for korte økter: minst 20 min per økt (eller det brukeren pleier), innenfor maks totaltid
+    min_okt = max(20, b.get("min_lengste_kondisjonsokt_min") or 0)
+    antall = min(b["maks_okter_neste_7_dager"], max(1, b["maks_minutter_neste_7_dager"] // min_okt))
+    per_okt = max(min_okt, min(int(bruker.get("minutter_per_okt", 45)), b["maks_minutter_neste_7_dager"] // antall))
+    if b.get("maks_minutter_per_okt"):
+        per_okt = min(per_okt, b["maks_minutter_per_okt"])
     harde_igjen = b["maks_harde_okter_neste_7_dager"]
 
-    # Fordel øktene jevnt over uka
-    plassering = {round(i * 7 / antall) for i in range(antall)} if antall else set()
+    # Fordel øktene jevnt over dagene etter eventuelle sykedager
+    start = fakta["i_dag"].get("hviledager_forst", 0)
+    plassering = {start + round(i * (7 - start) / antall) for i in range(antall)} if antall else set()
     typer = {
         "utholdenhet": ["lop", "lop", "styrke", "lop", "lop", "lop"],
         "styrke": ["styrke", "lop", "styrke", "styrke", "lop"],
@@ -39,7 +43,7 @@ def lag_plan_uten_ai(fakta: dict, bruker: dict) -> dict:
     soner = {s["sone"]: s for s in fakta["puls"]["soner"]}
     dager, n, forrige_hard = [], 0, False
     for i, dag in enumerate(fakta["dager_i_planen"]):
-        regel = fakta["i_dag"]["tillatt_i_dag"] if i == 0 else "som planlagt"
+        regel = fakta["i_dag"]["tillatt_i_dag"] if i == 0 else "hvile" if i < start else "som planlagt"
         if i not in plassering or regel == "hvile":
             dager.append(_hvile(dag, "Sykedag" if regel == "hvile" else "Hviledag"))
             forrige_hard = False
@@ -64,7 +68,8 @@ def lag_plan_uten_ai(fakta: dict, bruker: dict) -> dict:
                 "pulssone": "4" if hard else "1-2" if typ == "gange" else "2",
                 "tempo": (lop.get("intervall_tempo") if hard else lop.get("rolig_tempo", "")) or "",
                 "beskrivelse": (f"Puls {sone['fra']}–{sone['til']}. "
-                                + ("4–6 drag à 3–4 min med 2 min rolig pause." if hard else "Du skal kunne prate hele veien.")),
+                                + ("Dragene skal kjennes hardt, men kontrollert." if hard else "Du skal kunne prate hele veien.")),
+                "deler": _intervalldeler(minutter) if hard else [{"tekst": "Rolig og jevnt", "minutter": minutter, "ganger": 1}],
                 "ovelser": [],
             })
 
@@ -84,7 +89,15 @@ def lag_plan_uten_ai(fakta: dict, bruker: dict) -> dict:
 
 def _hvile(dag: dict, tittel: str) -> dict:
     return {**dag, "type": "hvile", "tittel": tittel, "minutter": 0, "intensitet": "hvile",
-            "pulssone": "", "tempo": "", "beskrivelse": "Hvile er en del av treningen.", "ovelser": []}
+            "pulssone": "", "tempo": "", "beskrivelse": "Hvile er en del av treningen.", "deler": [], "ovelser": []}
+
+
+def _intervalldeler(minutter: int) -> list[dict]:
+    """10 min oppvarming, drag på 3 min + 2 min rolig, og resten nedjogg. Summen blir alltid lik minutter."""
+    drag = max(1, min(6, (minutter - 15) // 5))
+    return [{"tekst": "Rolig oppvarming", "minutter": 10, "ganger": 1},
+            {"tekst": "3 min drag + 2 min rolig jogg", "minutter": 5, "ganger": drag},
+            {"tekst": "Rolig nedjogg", "minutter": minutter - 10 - 5 * drag, "ganger": 1}]
 
 
 def _styrke(dag: dict, minutter: int, fakta: dict) -> dict:
@@ -95,4 +108,7 @@ def _styrke(dag: dict, minutter: int, fakta: dict) -> dict:
         ovelser = [{"navn": n, "sett": 3, "reps": "8-10", "kg": 0, "tips": t} for n, t in STANDARD_STYRKE]
     return {**dag, "type": "styrke", "tittel": "Styrke", "minutter": minutter, "intensitet": "moderat",
             "pulssone": "", "tempo": "", "beskrivelse": "3 sett per øvelse, 1–2 min pause mellom settene.",
+            "deler": [{"tekst": "Oppvarming", "minutter": 5, "ganger": 1},
+                      {"tekst": "Øvelsene", "minutter": minutter - 10, "ganger": 1},
+                      {"tekst": "Rolig avslutning", "minutter": 5, "ganger": 1}],
             "ovelser": ovelser}
