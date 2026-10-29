@@ -14,6 +14,8 @@ from .regler import kcal_for_okt
 SLINGRINGSMONN = 1.05  # 5 % margin på totaltid
 KONDISJON = ("lop", "gange", "sykkel")
 MINUTTALL = re.compile(r"\d+\s*(min|minutt)", re.IGNORECASE)
+# Ord fra regelmotoren som ikke skal vises til brukeren (se «Tone» i instruks.md)
+MASKINORD = re.compile(r"\b(belastningspoeng|akutt|kronisk|status|forhoyet|hoy|regelmotor\w*|fakta|kg 0)\b", re.IGNORECASE)
 
 
 def _okter(plan: dict) -> list[dict]:
@@ -127,6 +129,12 @@ def sjekk_plan(plan: dict, fakta: dict) -> list[str]:
         feil.append("Feltet 'trygghet' er tomt, men disse varslene må med: " + " | ".join(maa_med))
     if any("fastlege" in v for v in maa_med) and "fastlege" not in plan.get("trygghet", "").lower():
         feil.append("Feltet 'trygghet' må anbefale brukeren å snakke med fastlegen.")
+
+    # 7b. Ingen ord fra regelmotoren i teksten brukeren leser
+    brukertekst = " ".join([plan.get("pt_melding", ""), plan.get("trygghet", "")] + plan.get("hvorfor", []))
+    funnet = sorted({m.group(0).lower() for m in MASKINORD.finditer(brukertekst)})
+    if funnet:
+        feil.append(f"Ikke bruk ord fra regelmotoren ({', '.join(funnet)}). Si det som en PT, f.eks. «du har trent mer enn vanlig».")
 
     # 8. Stort vektmål: brukeren skal få et konkret delmål
     vektmal = fakta["energi"].get("vektmal")

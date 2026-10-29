@@ -50,7 +50,7 @@ def lag_plan_uten_ai(fakta: dict, bruker: dict) -> dict:
             continue
         typ = typer[n % len(typer)]
         n += 1
-        minutter = round(per_okt * 0.75) if regel.startswith("bare rolig") else per_okt
+        minutter = round(per_okt * 0.75) if "kortere" in regel else per_okt
         hard = (typ == "lop" and lop.get("harde_lopeokter_tillatt", True) and harde_igjen > 0
                 and not forrige_hard and regel == "som planlagt" and i > 0)
         if hard:
@@ -80,7 +80,7 @@ def lag_plan_uten_ai(fakta: dict, bruker: dict) -> dict:
         "pt_melding": "TESTMODUS: Planen er laget av reglene alene, uten AI. Kjør uten --uten-ai for en personlig plan.",
         "dager": dager,
         "hvorfor": [
-            f"Belastning: {b['status']}, maks {b['maks_minutter_neste_7_dager']} min de neste 7 dagene.",
+            f"Du har trent ca. {b['snitt_minutter_per_uke']} min i uka, og denne uka er på høyst {b['maks_minutter_neste_7_dager']} min.",
             f"Løpenivå: {lop.get('niva')}.",
         ],
         "trygghet": " ".join(varsler),

@@ -39,6 +39,7 @@ SYK_ANDEL_AV_SNITT = 0.5          # resten av en sykeuke: maks halvparten av van
 SYK_ANDEL_AV_OKT = 0.75           # og hver økt maks 75 % av en vanlig økt
 TILBAKE_DAGER = 7                 # så lenge etter at brukeren er frisk gjelder «tilbake etter sykdom»
 TILBAKE_ANDEL_AV_SNITT = 0.75     # maks 75 % av vanlig treningstid, ingen harde økter
+TILBAKE_MIN_ANDEL_AV_OKT = 0.6    # men lengste kondisjonsøkt minst 60 % av en vanlig, så det ikke blir for forsiktig
 
 # Hvor anstrengende en økt er når brukeren ikke har oppgitt det (1–10)
 STANDARD_RPE = {"lop": 5, "styrke": 6, "sykkel": 5, "padel": 6, "fotball": 7, "gange": 2, "annet": 5}
@@ -307,6 +308,8 @@ def belastning(okter: list[dict], i_dag: date, bruker: dict, sykdom: str | None 
     if vanlig_kondisjon and sykdom is None and status in ("trygg", "lav", "forhoyet"):
         min_lengste = min(round(vanlig_kondisjon * IKKE_BAKOVER_ANDEL),
                           int(bruker.get("minutter_per_okt", 45)), maks_min)
+    elif vanlig_kondisjon and sykdom == "tilbake":
+        min_lengste = min(round(vanlig_kondisjon * TILBAKE_MIN_ANDEL_AV_OKT), maks_per_okt or maks_min, maks_min)
 
     return {
         "akutt_7d": round(akutt), "kronisk_snitt_28d": round(kronisk), "forhold": ratio, "status": status,
