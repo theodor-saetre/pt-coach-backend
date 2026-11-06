@@ -276,12 +276,17 @@ def chat_prat(data: dict):
     min_per = bruker.get("minutter_per_okt", 60)
     navn = bruker.get("navn", "")
 
+    skader = bruker.get("skader", "")
+    ekstra = bruker.get("ekstra_info", "")
+
     system = (
         f"Du er en personlig PT-coach i en norsk treningsapp. "
         f"{'Brukerens navn er ' + navn + '.' if navn else ''} "
         f"Mål: {mal}. Nivå: {niva}. Utstyr: {utstyr}. "
         f"Trener {dager} dager/uke, {min_per} min per økt. "
-        "Svar alltid kort (1–4 setninger), på norsk, som en PT ville gjort: konkret og motiverende. "
+        + (f"Skader/begrensninger: {skader}. " if skader else "")
+        + (f"Ekstra kontekst fra brukeren: {ekstra}. " if ekstra else "")
+        + "Svar alltid kort (1–4 setninger), på norsk, som en PT ville gjort: konkret og motiverende. "
         "Ikke gi medisinske råd. Hvis brukeren melder at de er syk/sliten/pigg, noter det og juster forventningene."
     )
 
