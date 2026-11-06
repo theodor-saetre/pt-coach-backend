@@ -1,0 +1,999 @@
+<title>Treningsdagbok</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+:root {
+  --bg: #F5F6F2; --surface: #fff; --surface-2: #EEEEE9;
+  --border: #E0E2DC; --fg: #1B211A; --fg-muted: #6A7066;
+  --accent: #2D6A4F; --accent-h: #225540; --accent-fg: #fff;
+  --shadow: 0 2px 8px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --r: 14px; --r-sm: 8px;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131611;--surface:#1C2019;--surface-2:#252922;--border:#2E3329;
+  --fg:#ECF0E8;--fg-muted:#8A9187;--accent:#52B788;--accent-h:#3EA373;--accent-fg:#091510;
+  --shadow:0 2px 8px rgba(0,0,0,.3);color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#131611;--surface:#1C2019;--surface-2:#252922;--border:#2E3329;
+  --fg:#ECF0E8;--fg-muted:#8A9187;--accent:#52B788;--accent-h:#3EA373;--accent-fg:#091510;
+  --shadow:0 2px 8px rgba(0,0,0,.3);color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--fg);font-size:15px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.app{max-width:520px;margin:0 auto;padding-block:32px 120px;display:flex;flex-direction:column;gap:20px}
+
+/* Header */
+.topp{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'DM Serif Display',serif;font-size:1.6rem;font-weight:400;letter-spacing:-.02em}
+.navn-pill{
+  background:var(--accent);color:var(--accent-fg);padding:4px 12px;
+  border-radius:100px;font-size:13px;font-weight:600;
+}
+
+/* Seksjoner */
+.seksjons-hd{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-muted);margin-bottom:10px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+
+/* Dagens økt */
+.dagens-okt{
+  background:var(--accent);color:var(--accent-fg);border-radius:var(--r);
+  padding:20px;box-shadow:0 4px 16px rgba(45,106,79,.25);
+}
+.dagens-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.75;margin-bottom:4px}
+.dagens-tittel{font-size:1.35rem;font-weight:700;line-height:1.2;margin-bottom:8px}
+.dagens-meta{display:flex;gap:12px;font-size:13px;opacity:.85;flex-wrap:wrap}
+.dagens-beskrivelse{margin-top:10px;font-size:13px;opacity:.8;line-height:1.5}
+.logg-denne-btn{
+  margin-top:14px;display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.2);color:#fff;border:none;
+  padding:8px 16px;border-radius:var(--r-sm);font-weight:600;font-size:13px;
+  cursor:pointer;transition:background .15s;font-family:inherit;
+}
+.logg-denne-btn:hover{background:rgba(255,255,255,.3)}
+.ingen-okt{text-align:center;padding:24px;color:var(--fg-muted);font-size:14px}
+
+/* Kommende */
+.plan-item{
+  display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border);
+}
+.plan-item:last-child{border-bottom:none}
+.dato-badge{
+  background:var(--surface-2);border-radius:var(--r-sm);
+  padding:6px 10px;text-align:center;min-width:48px;flex-shrink:0;
+}
+.dato-dag{font-size:11px;font-weight:600;text-transform:uppercase;color:var(--fg-muted)}
+.dato-num{font-size:18px;font-weight:700;line-height:1}
+.plan-info{flex:1}
+.plan-tittel{font-weight:600;margin-bottom:2px}
+.plan-meta{display:flex;gap:8px;font-size:12px;color:var(--fg-muted)}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600}
+.badge-lop{background:#DBEAFE;color:#1D4ED8}.badge-styrke{background:#FEF3C7;color:#92400E}
+.badge-sykkel{background:#F3E8FF;color:#6B21A8}.badge-gange{background:#DCFCE7;color:#15803D}
+.badge-annet{background:var(--surface-2);color:var(--fg-muted)}
+.badge-rolig{background:#DCFCE7;color:#166534}.badge-moderat{background:#FEF3C7;color:#92400E}.badge-hard{background:#FEE2E2;color:#991B1B}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .badge-lop{background:#1E3A5F;color:#93C5FD}
+  :root:not([data-theme="light"]) .badge-styrke{background:#3D2E0A;color:#FCD34D}
+}
+:root[data-theme="dark"] .badge-lop{background:#1E3A5F;color:#93C5FD}
+:root[data-theme="dark"] .badge-styrke{background:#3D2E0A;color:#FCD34D}
+
+/* Logg-form */
+.logg-form{display:flex;flex-direction:column;gap:10px}
+.logg-form label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--fg-muted)}
+.logg-form textarea{
+  width:100%;min-height:90px;resize:vertical;padding:10px 12px;
+  border:1.5px solid var(--border);border-radius:var(--r-sm);
+  background:var(--surface-2);color:var(--fg);font-size:14px;outline:none;transition:border-color .12s;
+}
+.logg-form textarea:focus{border-color:var(--accent)}
+.logg-form textarea::placeholder{color:var(--fg-muted);opacity:.7}
+.logg-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logg-hint{font-size:12px;color:var(--fg-muted);font-style:italic}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--r-sm);border:none;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn-primary{background:var(--accent);color:var(--accent-fg)}.btn-primary:hover{background:var(--accent-h)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.feil{color:#C0392B;font-size:12px}
+
+/* Siste logg */
+.siste-header{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:10px}
+.siste-header::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:var(--accent);animation:puls 1.8s ease-in-out infinite}
+@keyframes puls{0%,100%{opacity:1}50%{opacity:.35}}
+
+.okt-kort{border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px}
+.okt-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.okt-dato{font-size:12px;color:var(--fg-muted);margin-left:auto}
+.okt-tittel{font-weight:600;font-size:14px;margin-bottom:3px}
+.okt-noter{font-size:13px;color:var(--fg-muted);margin-bottom:5px}
+.okt-meta{display:flex;gap:10px;font-size:12px;color:var(--fg-muted);font-variant-numeric:tabular-nums}
+
+/* Logg-input med mikrofon */
+.logg-input-rad{display:flex;gap:8px;align-items:flex-end}
+.logg-input-rad textarea{flex:1}
+.mic-btn{
+  flex-shrink:0;width:40px;height:40px;border-radius:50%;
+  background:var(--surface-2);border:1.5px solid var(--border);
+  cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;
+  transition:background .15s;color:var(--fg);align-self:flex-end;margin-bottom:1px;
+}
+.mic-btn:hover{background:var(--border)}
+.mic-btn.lytter{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);animation:puls 1s ease-in-out infinite}
+
+/* Analysert utkast */
+.utkast-seksjon{display:flex;flex-direction:column;gap:10px}
+.utkast-meta-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.meta-felt{
+  display:flex;align-items:center;gap:5px;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:5px 10px;font-size:13px;
+}
+.meta-felt select,.meta-felt input{
+  background:none;border:none;outline:none;font-family:inherit;
+  font-size:13px;color:var(--fg);padding:0;
+}
+.meta-felt input{width:44px;text-align:center}
+.meta-felt select{cursor:pointer}
+.meta-felt .meta-etikett{color:var(--fg-muted);font-size:12px}
+
+/* Øvelseskort i utkast */
+.ovelse-liste{display:flex;flex-direction:column;gap:6px}
+.ovelse-rad{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 10px;background:var(--surface-2);
+  border-radius:var(--r-sm);border:1px solid var(--border);
+}
+.ovelse-navn-input{
+  flex:1;min-width:0;background:none;border:none;outline:none;
+  font-family:inherit;font-size:14px;font-weight:500;color:var(--fg);
+}
+.ovelse-navn-input::placeholder{color:var(--fg-muted)}
+.ovelse-tall-input{
+  width:44px;text-align:center;background:var(--border);border:none;outline:none;
+  border-radius:6px;padding:3px 4px;font-size:13px;font-family:inherit;color:var(--fg);
+}
+.ovelse-sep{font-size:12px;color:var(--fg-muted);flex-shrink:0}
+.ovelse-vekt-input{
+  width:52px;text-align:center;background:var(--border);border:none;outline:none;
+  border-radius:6px;padding:3px 4px;font-size:13px;font-family:inherit;color:var(--accent);font-weight:600;
+}
+.ovelse-vekt-input::placeholder{color:var(--fg-muted)}
+.fjern-btn{background:none;border:none;cursor:pointer;color:var(--fg-muted);font-size:16px;padding:0 2px;line-height:1;flex-shrink:0}
+.fjern-btn:hover{color:var(--fg)}
+
+/* Display (read-only) */
+.ovelse-rad-vis{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 12px;background:var(--surface-2);
+  border-radius:var(--r-sm);border:1px solid var(--border);
+}
+.ovelse-navn{flex:1;font-weight:500;font-size:14px}
+.ovelse-sett{font-size:12px;color:var(--fg-muted);background:var(--border);padding:2px 8px;border-radius:20px;white-space:nowrap}
+.ovelse-vekt{font-size:13px;color:var(--accent);font-weight:600;white-space:nowrap}
+
+.btn-secondary{background:var(--surface-2);color:var(--fg);border:1.5px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+.logg-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* Chat */
+.chat-wrap{position:fixed;bottom:20px;right:max(20px,env(safe-area-inset-right,20px));z-index:100}
+.chat-knapp{
+  width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-fg);
+  border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(45,106,79,.35);
+  display:flex;align-items:center;justify-content:center;transition:background .15s;
+}
+.chat-knapp:hover{background:var(--accent-h)}
+.chat-boks{
+  position:absolute;bottom:62px;right:0;width:300px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;
+}
+.chat-hd{padding:10px 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.chat-meldinger{height:260px;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
+.melding{max-width:85%;padding:7px 10px;border-radius:9px;font-size:13px;line-height:1.4}
+.melding.trener{align-self:flex-start;background:var(--surface-2);color:var(--fg)}
+.melding.utover{align-self:flex-end;background:var(--accent);color:var(--accent-fg)}
+.chat-input-row{padding:8px;border-top:1px solid var(--border);display:flex;gap:6px}
+.chat-input-row textarea{flex:1;min-height:34px;max-height:60px;padding:5px 9px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:var(--bg);color:var(--fg);font-size:13px;outline:none;resize:none}
+.chat-input-row textarea:focus{border-color:var(--accent)}
+.chat-input-row .btn{padding:5px 10px;font-size:13px;align-self:flex-end}
+.ulest-dot{width:9px;height:9px;border-radius:50%;background:#EF4444;border:2px solid var(--surface);position:absolute;top:0;right:0}
+
+@media(max-width:400px){.chat-boks{width:calc(100vw - 40px);right:-10px}}
+
+/* Belastningsgraf */
+.graf-filter-rad{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.graf-select{
+  width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);
+  background:var(--surface-2);color:var(--fg);font-size:13px;font-family:inherit;outline:none;cursor:pointer;
+}
+.graf-select:focus{border-color:var(--accent)}
+.graf-tabs{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:2px;flex-shrink:0}
+.graf-tab{
+  padding:4px 10px;border-radius:6px;border:none;font-size:12px;font-weight:600;
+  cursor:pointer;font-family:inherit;color:var(--fg-muted);background:none;transition:all .12s;white-space:nowrap;
+}
+.graf-tab.aktiv{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+</style>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const {useState, useEffect, useRef, useCallback} = React;
+
+const TYPE_LABEL = {lop:'Løp',styrke:'Styrke',sykkel:'Sykkel',padel:'Padel',fotball:'Fotball',gange:'Gange',annet:'Annet'};
+
+function utoverId() {
+  return window.location.pathname.split('/u/')[1]?.split('/')[0] || '';
+}
+
+function formatDato(d) {
+  if (!d) return '';
+  try { return new Date(d+'T12:00:00').toLocaleDateString('nb-NO',{weekday:'long',day:'numeric',month:'long'}); }
+  catch { return d; }
+}
+function formatKortDato(d) {
+  if (!d) return '';
+  try { const dt = new Date(d+'T12:00:00'); return {dag:dt.toLocaleDateString('nb-NO',{weekday:'short'}), num:dt.getDate()}; }
+  catch { return {dag:'',num:''}; }
+}
+
+function Badge({type, cls}) {
+  return <span className={`badge badge-${cls||type}`}>{TYPE_LABEL[type]||type}</span>;
+}
+
+// ── Flytende chat ────────────────────────────────────────────────────────────
+
+function FloatChat({uid, navn}) {
+  const [åpen, setÅpen] = useState(false);
+  const [meldinger, setMeldinger] = useState([]);
+  const [tekst, setTekst] = useState('');
+  const [sender, setSender] = useState(false);
+  const [ulest, setUlest] = useState(false);
+  const bunnen = useRef(null);
+  const sisteRef = useRef(null);
+
+  const last = useCallback(async () => {
+    const params = sisteRef.current ? `?etter=${encodeURIComponent(sisteRef.current)}` : '';
+    const res = await fetch(`/utovere/${uid}/meldinger${params}`);
+    if (!res.ok) return;
+    const nye = await res.json();
+    if (nye.length > 0) {
+      setMeldinger(prev => [...prev, ...nye]);
+      sisteRef.current = nye[nye.length-1].opprettet;
+      if (!åpen) setUlest(true);
+    }
+  }, [uid, åpen]);
+
+  useEffect(() => { last(); }, []);
+  useEffect(() => {
+    const id = setInterval(last, 5000);
+    return () => clearInterval(id);
+  }, [last]);
+  useEffect(() => { if (åpen) { setUlest(false); bunnen.current?.scrollIntoView(); } }, [åpen, meldinger]);
+
+  async function send(e) {
+    e.preventDefault();
+    if (!tekst.trim() || sender) return;
+    setSender(true);
+    const res = await fetch(`/utovere/${uid}/meldinger`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({tekst, fra:'utover'}),
+    });
+    if (res.ok) {
+      const m = await res.json();
+      setMeldinger(prev=>[...prev,m]);
+      sisteRef.current = m.opprettet;
+      setTekst('');
+    }
+    setSender(false);
+  }
+
+  return (
+    <div className="chat-wrap">
+      {åpen && (
+        <div className="chat-boks">
+          <div className="chat-hd">
+            <span>Chat med trener</span>
+            <button onClick={()=>setÅpen(false)} style={{background:'none',border:'none',cursor:'pointer',color:'var(--fg-muted)',fontSize:16}}>×</button>
+          </div>
+          <div className="chat-meldinger">
+            {meldinger.length===0 && <div style={{textAlign:'center',color:'var(--fg-muted)',fontSize:12,marginTop:20}}>Ingen meldinger ennå</div>}
+            {meldinger.map(m=>(
+              <div key={m.id} className={`melding ${m.fra}`}>{m.tekst}</div>
+            ))}
+            <div ref={bunnen}/>
+          </div>
+          <form className="chat-input-row" onSubmit={send}>
+            <textarea value={tekst} onChange={e=>setTekst(e.target.value)} placeholder="Skriv…"
+              onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(e);}}}/>
+            <button className="btn btn-primary" type="submit" disabled={sender||!tekst.trim()}>→</button>
+          </form>
+        </div>
+      )}
+      <div style={{position:'relative',display:'inline-block'}}>
+        <button className="chat-knapp" onClick={()=>setÅpen(!åpen)}>💬</button>
+        {ulest && <div className="ulest-dot"/>}
+      </div>
+    </div>
+  );
+}
+
+// ── Kroppskart ───────────────────────────────────────────────────────────────
+
+const MUSKEL_NOKLER = {
+  bryst:    ['benkpress','flies','flyes','dips','push-up','pushup','kabelkryss','bryst','pec','incline','decline','chest'],
+  skuldre:  ['skulderpress','sidehev','frontløft','arnoldpress','arnold','militærpress','overhead','skuldre','lateral raise','shoulder'],
+  biceps:   ['biceps','bicep','bicep curl','hammer curl','preacher','chin-up','chinup'],
+  triceps:  ['triceps','tricep','triceps pushdown','pushdown','skull','close grip','overhead extension'],
+  rygg:     ['roing','pullups','pull-up','chins','nedtrekk','lat pulldown','rygg','seated row','kabel roing','markløft','deadlift','back'],
+  mage:     ['planke','situp','sit-up','crunch','mage','ab','core','leg raise','hanging'],
+  lar:      ['knebøy','beinpress','lunges','lunge','bulgarian','squat','leg extension','hack','quad'],
+  hamstring:['hamstring','leg curl','romanian','rdl','hip thrust','stiff leg','glute','rumpe'],
+  legg:     ['legg','calf raise','stå calf','sittende calf','gastrocnemius'],
+  trapes:   ['shrugs','shrug','trapes','trap','nakketrekk'],
+};
+
+function KroppKart({logg}) {
+  const dag7 = new Date(); dag7.setDate(dag7.getDate()-7);
+  const grense = dag7.toISOString().slice(0,10);
+  const nylige = logg.filter(o => o.dato >= grense);
+
+  const vol = {};
+  for (const o of nylige) {
+    for (const ov of (o.ovelser||[])) {
+      const n = (ov.navn||'').toLowerCase();
+      const v = Math.max((ov.sett||0)*(ov.reps||0)*(ov.vekt_kg||1), (ov.sett||0)*(ov.reps||0));
+      for (const [g, keys] of Object.entries(MUSKEL_NOKLER)) {
+        if (keys.some(k => n.includes(k))) { vol[g]=(vol[g]||0)+v; break; }
+      }
+    }
+  }
+
+  const maxV = Math.max(...Object.values(vol), 1);
+  function c(g) {
+    const v = vol[g]||0; if (!v) return null;
+    const n = v/maxV;
+    if (n < 0.2) return '#fef08a';
+    if (n < 0.45) return '#fde047';
+    if (n < 0.7)  return '#fb923c';
+    return '#ef4444';
+  }
+
+  const krop = 'var(--surface-2)', kant = 'var(--border)';
+  const ingenData = Object.keys(vol).length === 0;
+
+  function Figur({side}) {
+    const sp = {fill: krop, stroke: kant, strokeWidth: "1.2"};
+    return (
+      <g>
+        {/* Hode */}
+        <circle cx="60" cy="17" r="13" {...sp}/>
+        {/* Hals */}
+        <path d="M 55,29 L 65,29 L 64,42 L 56,42 Z" {...sp}/>
+        {/* Torso – skulder, midje, hofte med organiske kurver */}
+        <path d="M 27,42 C 20,43 13,50 11,60 L 10,120 C 10,132 16,140 24,143 L 24,157 C 22,163 26,170 32,170 L 88,170 C 94,170 98,163 96,157 L 96,143 C 104,140 110,132 110,120 L 109,60 C 107,50 100,43 93,42 Z" {...sp}/>
+        {/* Venstre overarm – avsmalnet utover */}
+        <path d="M 8,44 C 2,48 1,62 2,78 C 3,94 7,110 12,116 C 17,120 22,118 24,112 C 26,106 24,92 22,76 C 20,60 17,46 13,42 Z" {...sp}/>
+        {/* Høyre overarm */}
+        <path d="M 112,44 C 118,48 119,62 118,78 C 117,94 113,110 108,116 C 103,120 98,118 96,112 C 94,106 96,92 98,76 C 100,60 103,46 107,42 Z" {...sp}/>
+        {/* Venstre underarm */}
+        <path d="M 8,116 C 5,122 5,136 7,150 C 8,158 12,163 16,162 C 20,161 22,155 21,147 C 20,133 18,119 15,116 Z" {...sp}/>
+        {/* Høyre underarm */}
+        <path d="M 112,116 C 115,122 115,136 113,150 C 112,158 108,163 104,162 C 100,161 98,155 99,147 C 100,133 102,119 105,116 Z" {...sp}/>
+        {/* Venstre lår */}
+        <path d="M 32,170 C 27,175 25,193 27,212 C 29,228 34,240 40,240 C 46,240 51,228 51,212 C 51,196 49,177 46,170 Z" {...sp}/>
+        {/* Høyre lår */}
+        <path d="M 88,170 C 93,175 95,193 93,212 C 91,228 86,240 80,240 C 74,240 69,228 69,212 C 69,196 71,177 74,170 Z" {...sp}/>
+        {/* Venstre legg */}
+        <path d="M 30,240 C 27,250 27,263 29,273 C 31,281 36,285 40,284 C 44,283 46,276 45,266 C 44,254 41,240 37,238 Z" {...sp}/>
+        {/* Høyre legg */}
+        <path d="M 90,240 C 93,250 93,263 91,273 C 89,281 84,285 80,284 C 76,283 74,276 75,266 C 76,254 79,240 83,238 Z" {...sp}/>
+
+        {side === 'front' && <>
+          {/* Deltoid – avrundet dråpeform på skuldertopp */}
+          {c('skuldre') && <>
+            <path d="M 9,44 C 2,48 0,58 1,72 C 2,82 8,90 16,88 C 22,86 25,78 24,68 C 22,56 17,44 11,42 Z" fill={c('skuldre')} opacity=".85"/>
+            <path d="M 111,44 C 118,48 120,58 119,72 C 118,82 112,90 104,88 C 98,86 95,78 96,68 C 98,56 103,44 109,42 Z" fill={c('skuldre')} opacity=".85"/>
+          </>}
+          {/* Pectoralis – vifteform fra sternum ut mot skulder */}
+          {c('bryst') && <>
+            <path d="M 57,56 C 46,54 33,60 29,72 C 25,82 28,96 38,102 C 46,106 57,102 61,90 C 64,78 64,62 59,55 Z" fill={c('bryst')} opacity=".85"/>
+            <path d="M 63,56 C 74,54 87,60 91,72 C 95,82 92,96 82,102 C 74,106 63,102 59,90 C 56,78 56,62 61,55 Z" fill={c('bryst')} opacity=".85"/>
+          </>}
+          {/* Biceps – spindel på forsiden av overarm */}
+          {c('biceps') && <>
+            <path d="M 9,60 C 4,66 3,78 6,92 C 8,102 14,108 19,106 C 23,104 24,94 22,80 C 20,66 15,58 11,58 Z" fill={c('biceps')} opacity=".82"/>
+            <path d="M 111,60 C 116,66 117,78 114,92 C 112,102 106,108 101,106 C 97,104 96,94 98,80 C 100,66 105,58 109,58 Z" fill={c('biceps')} opacity=".82"/>
+          </>}
+          {/* Rectus abdominis */}
+          {c('mage') && <path d="M 48,108 C 44,108 42,117 42,127 C 42,137 44,143 48,144 L 72,144 C 76,143 78,137 78,127 C 78,117 76,108 72,108 Z" fill={c('mage')} opacity=".85"/>}
+          {/* Quadriceps – dråpe på forsiden av lår */}
+          {c('lar') && <>
+            <path d="M 33,172 C 28,182 27,202 29,218 C 31,230 37,238 42,236 C 48,234 50,222 49,206 C 48,192 44,174 40,170 Z" fill={c('lar')} opacity=".82"/>
+            <path d="M 87,172 C 92,182 93,202 91,218 C 89,230 83,238 78,236 C 72,234 70,222 71,206 C 72,192 76,174 80,170 Z" fill={c('lar')} opacity=".82"/>
+          </>}
+          {/* Gastrocnemius (legg) */}
+          {c('legg') && <>
+            <path d="M 31,242 C 28,252 28,264 30,274 C 32,282 37,286 41,284 C 45,282 46,274 45,264 C 44,252 41,240 37,239 Z" fill={c('legg')} opacity=".82"/>
+            <path d="M 89,242 C 92,252 92,264 90,274 C 88,282 83,286 79,284 C 75,282 74,274 75,264 C 76,252 79,240 83,239 Z" fill={c('legg')} opacity=".82"/>
+          </>}
+        </>}
+
+        {side === 'bak' && <>
+          {/* Trapezius – diamantform øvre rygg */}
+          {c('trapes') && <path d="M 60,36 C 50,36 32,44 28,58 C 25,68 32,78 44,78 L 56,76 L 60,74 L 64,76 L 76,78 C 88,78 95,68 92,58 C 88,44 70,36 60,36 Z" fill={c('trapes')} opacity=".85"/>}
+          {/* Latissimus dorsi – trekantede vinger */}
+          {c('rygg') && <>
+            <path d="M 26,68 C 20,76 18,92 21,108 C 23,120 30,138 42,150 L 52,156 C 44,142 36,126 32,108 C 28,92 28,76 30,68 Z" fill={c('rygg')} opacity=".82"/>
+            <path d="M 94,68 C 100,76 102,92 99,108 C 97,120 90,138 78,150 L 68,156 C 76,142 84,126 88,108 C 92,92 92,76 90,68 Z" fill={c('rygg')} opacity=".82"/>
+          </>}
+          {/* Triceps – spindel på baksiden av overarm */}
+          {c('triceps') && <>
+            <path d="M 8,54 C 3,60 2,74 4,88 C 5,102 11,112 16,110 C 21,108 23,96 21,82 C 19,68 13,56 9,52 Z" fill={c('triceps')} opacity=".82"/>
+            <path d="M 112,54 C 117,60 118,74 116,88 C 115,102 109,112 104,110 C 99,108 97,96 99,82 C 101,68 107,56 111,52 Z" fill={c('triceps')} opacity=".82"/>
+          </>}
+          {/* Gluteus maximus – avrundede former */}
+          {c('hamstring') && <>
+            <path d="M 33,156 C 27,162 26,176 29,188 C 32,198 38,202 44,198 C 51,194 53,180 50,168 C 47,158 41,152 36,154 Z" fill={c('hamstring')} opacity=".85"/>
+            <path d="M 87,156 C 93,162 94,176 91,188 C 88,198 82,202 76,198 C 69,194 67,180 70,168 C 73,158 79,152 84,154 Z" fill={c('hamstring')} opacity=".85"/>
+          </>}
+          {/* Hamstrings – bakside av lår */}
+          {c('hamstring') && <>
+            <path d="M 33,196 C 28,208 27,224 29,236 C 31,244 37,248 42,246 C 48,244 50,232 49,218 C 47,204 43,194 38,192 Z" fill={c('hamstring')} opacity=".78"/>
+            <path d="M 87,196 C 92,208 93,224 91,236 C 89,244 83,248 78,246 C 72,244 70,232 71,218 C 73,204 77,194 82,192 Z" fill={c('hamstring')} opacity=".78"/>
+          </>}
+          {/* Gastrocnemius bak */}
+          {c('legg') && <>
+            <path d="M 31,242 C 28,252 28,264 30,274 C 32,282 37,286 41,284 C 45,282 46,274 45,264 C 44,252 41,240 37,239 Z" fill={c('legg')} opacity=".82"/>
+            <path d="M 89,242 C 92,252 92,264 90,274 C 88,282 83,286 79,284 C 75,282 74,274 75,264 C 76,252 79,240 83,239 Z" fill={c('legg')} opacity=".82"/>
+          </>}
+        </>}
+      </g>
+    );
+  }
+
+  return (
+    <div className="card">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+        <div className="seksjons-hd" style={{margin:0}}>Muskelbelastning</div>
+        <span style={{fontSize:11,color:'var(--fg-muted)'}}>Siste 7 dager</span>
+      </div>
+
+      {ingenData ? (
+        <div style={{textAlign:'center',color:'var(--fg-muted)',fontSize:13,padding:'12px 0'}}>
+          Logg styrkeøkter for å se belastning på kroppen.
+        </div>
+      ) : (
+        <div style={{display:'flex',justifyContent:'center',gap:28,alignItems:'flex-start'}}>
+          <div style={{textAlign:'center'}}>
+            <div style={{fontSize:9,textTransform:'uppercase',letterSpacing:'.06em',color:'var(--fg-muted)',marginBottom:4}}>Foran</div>
+            <svg viewBox="0 0 120 288" style={{width:90,height:'auto'}}><Figur side="front"/></svg>
+          </div>
+          <div style={{textAlign:'center'}}>
+            <div style={{fontSize:9,textTransform:'uppercase',letterSpacing:'.06em',color:'var(--fg-muted)',marginBottom:4}}>Bak</div>
+            <svg viewBox="0 0 120 288" style={{width:90,height:'auto'}}><Figur side="bak"/></svg>
+          </div>
+        </div>
+      )}
+
+      {!ingenData && (
+        <div style={{display:'flex',gap:10,justifyContent:'center',marginTop:12,flexWrap:'wrap'}}>
+          {[['#fef08a','Lett'],['#fde047','Moderat'],['#fb923c','Tung'],['#ef4444','Veldig tung']].map(([f,l])=>(
+            <div key={f} style={{display:'flex',alignItems:'center',gap:4,fontSize:11,color:'var(--fg-muted)'}}>
+              <span style={{width:10,height:10,borderRadius:2,background:f,display:'inline-block',flexShrink:0}}/>
+              {l}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Belastningsgraf ──────────────────────────────────────────────────────────
+
+function BelastningsGraf({logg}) {
+  const alleOvelser = [...new Set(
+    logg.flatMap(o => (o.ovelser||[]).map(ov => ov.navn).filter(Boolean))
+  )].sort();
+
+  const [valgt, setValgt] = useState(alleOvelser[0] || '');
+  const [modus, setModus] = useState('vekt');
+  const [tooltip, setTooltip] = useState(null);
+
+  useEffect(() => {
+    if (alleOvelser.length && !alleOvelser.includes(valgt)) setValgt(alleOvelser[0]);
+  }, [alleOvelser.join(',')]);
+
+  if (!alleOvelser.length || !valgt) return null;
+
+  const punkter = logg
+    .filter(o => (o.ovelser||[]).some(ov => ov.navn === valgt))
+    .map(o => {
+      const rel = (o.ovelser||[]).filter(ov => ov.navn === valgt);
+      return {
+        dato: o.dato,
+        vekt: Math.max(0, ...rel.map(ov => ov.vekt_kg||0)),
+        volum: rel.reduce((s,ov)=>s+(ov.sett||0)*(ov.reps||0)*(ov.vekt_kg||0), 0)
+      };
+    })
+    .sort((a,b)=>a.dato.localeCompare(b.dato));
+
+  const vals = punkter.map(p => modus==='vekt' ? p.vekt : p.volum);
+  const n = punkter.length;
+
+  const formatD = d => { const p=d.split('-'); return `${parseInt(p[2])}/${parseInt(p[1])}`; };
+
+  const header = (
+    <div>
+      <div className="graf-filter-rad">
+        <div className="seksjons-hd" style={{margin:0}}>Fremgang</div>
+        <div className="graf-tabs">
+          <button className={`graf-tab${modus==='vekt'?' aktiv':''}`} onClick={()=>setModus('vekt')}>Maks vekt</button>
+          <button className={`graf-tab${modus==='volum'?' aktiv':''}`} onClick={()=>setModus('volum')}>Volum</button>
+        </div>
+      </div>
+      <select className="graf-select" value={valgt} onChange={e=>setValgt(e.target.value)}>
+        {alleOvelser.map(o=><option key={o} value={o}>{o}</option>)}
+      </select>
+    </div>
+  );
+
+  if (n < 2) return (
+    <div className="card">
+      {header}
+      <div style={{color:'var(--fg-muted)',fontSize:13,padding:'16px 0',textAlign:'center'}}>
+        Logg minst 2 {valgt}-økter for å se fremgang.
+      </div>
+    </div>
+  );
+
+  const W=440, H=150, PL=40, PR=10, PT=10, PB=28;
+  const gW=W-PL-PR, gH=H-PT-PB;
+  const maxV=Math.max(...vals), minV=Math.min(...vals);
+  const span=maxV-minV||Math.max(maxV,1);
+  const yLo=Math.max(0, minV-span*0.15), yHi=maxV+span*0.15;
+  const ySpan=yHi-yLo||1;
+
+  const xAt=i=>PL+(n>1?(i/(n-1))*gW:gW/2);
+  const yAt=v=>PT+gH-((v-yLo)/ySpan)*gH;
+
+  const linjeD=vals.map((v,i)=>`${i===0?'M':'L'}${xAt(i).toFixed(1)},${yAt(v).toFixed(1)}`).join(' ');
+  const yTicks=[0,0.5,1].map(f=>({v:yLo+f*ySpan, y:yAt(yLo+f*ySpan)}));
+  const maxLabels=Math.min(n,5);
+  const xIdxs=n<=maxLabels
+    ? punkter.map((_,i)=>i)
+    : Array.from({length:maxLabels},(_,k)=>Math.round(k*(n-1)/(maxLabels-1)));
+
+  return (
+    <div className="card">
+      {header}
+      <div style={{marginTop:8,position:'relative'}}>
+        <svg viewBox={`0 0 ${W} ${H}`} style={{width:'100%',height:'auto',overflow:'visible',display:'block'}}>
+          {yTicks.map((t,i)=>(
+            <line key={i} x1={PL} y1={t.y.toFixed(1)} x2={W-PR} y2={t.y.toFixed(1)}
+              stroke="var(--border)" strokeWidth="1"/>
+          ))}
+          {yTicks.map((t,i)=>(
+            <text key={i} x={PL-6} y={t.y.toFixed(1)} textAnchor="end" dominantBaseline="middle"
+              fill="var(--fg-muted)" fontSize="10" fontFamily="inherit">
+              {Math.round(t.v)}
+            </text>
+          ))}
+          {xIdxs.map(i=>(
+            <text key={i} x={xAt(i).toFixed(1)} y={H-4} textAnchor="middle"
+              fill="var(--fg-muted)" fontSize="10" fontFamily="inherit">
+              {formatD(punkter[i].dato)}
+            </text>
+          ))}
+          <path
+            d={`${linjeD} L${xAt(n-1).toFixed(1)},${(PT+gH).toFixed(1)} L${xAt(0).toFixed(1)},${(PT+gH).toFixed(1)} Z`}
+            fill="var(--accent)" opacity="0.1"/>
+          <path d={linjeD} fill="none" stroke="var(--accent)" strokeWidth="2"
+            strokeLinejoin="round" strokeLinecap="round"/>
+          {vals.map((v,i)=>(
+            <g key={i}>
+              <circle cx={xAt(i).toFixed(1)} cy={yAt(v).toFixed(1)} r="14" fill="transparent"
+                style={{cursor:'pointer'}}
+                onMouseEnter={()=>setTooltip({i,x:xAt(i),y:yAt(v),v,dato:punkter[i].dato})}
+                onMouseLeave={()=>setTooltip(null)}/>
+              <circle cx={xAt(i).toFixed(1)} cy={yAt(v).toFixed(1)} r={tooltip?.i===i?5:4}
+                fill={tooltip?.i===i?'var(--accent)':'var(--surface)'}
+                stroke="var(--accent)" strokeWidth="2" style={{pointerEvents:'none'}}/>
+            </g>
+          ))}
+          {tooltip && (()=>{
+            const TW=80,TH=40,pad=8;
+            let tx=tooltip.x-TW/2, ty=tooltip.y-TH-pad;
+            if(tx<PL) tx=PL;
+            if(tx+TW>W-PR) tx=W-PR-TW;
+            if(ty<PT) ty=tooltip.y+pad;
+            return (
+              <g style={{pointerEvents:'none'}}>
+                <rect x={tx} y={ty} width={TW} height={TH} rx="6"
+                  fill="var(--surface)" stroke="var(--border)" strokeWidth="1"/>
+                <text x={tx+TW/2} y={ty+13} textAnchor="middle" fill="var(--fg-muted)"
+                  fontSize="9.5" fontFamily="inherit">{formatD(tooltip.dato)}</text>
+                <text x={tx+TW/2} y={ty+29} textAnchor="middle" fill="var(--fg)"
+                  fontSize="13" fontWeight="700" fontFamily="inherit">
+                  {modus==='volum'?`${Math.round(tooltip.v)} kg`:`${tooltip.v} kg`}
+                </text>
+              </g>
+            );
+          })()}
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+// ── App ──────────────────────────────────────────────────────────────────────
+
+function App() {
+  const uid = utoverId();
+  const [utover, setUtover] = useState(null);
+  const [plan, setPlan] = useState([]);
+  const [logg, setLogg] = useState([]);
+  const [tekst, setTekst] = useState('');
+  const [laster, setLaster] = useState(false);
+  const [feil, setFeil] = useState('');
+  const [sisteOkt, setSisteOkt] = useState(null);
+  const [ikkeFunnet, setIkkeFunnet] = useState(false);
+  const loggRef = useRef(null);
+  const [utkast, setUtkast] = useState(null);
+  const [analyserer, setAnalyserer] = useState(false);
+  const [lytter, setLytter] = useState(false);
+
+  useEffect(() => {
+    if (!uid) { setIkkeFunnet(true); return; }
+    fetch(`/utovere/${uid}`).then(r => {
+      if (!r.ok) { setIkkeFunnet(true); return null; }
+      return r.json();
+    }).then(u => { if (u) setUtover(u); });
+    fetch(`/utovere/${uid}/plan`).then(r=>r.json()).then(setPlan).catch(()=>{});
+    fetch(`/utovere/${uid}/logg`).then(r=>r.json()).then(setLogg).catch(()=>{});
+  }, [uid]);
+
+  if (ikkeFunnet) return (
+    <div className="app" style={{textAlign:'center',paddingTop:80}}>
+      <div style={{fontSize:'3rem',marginBottom:16}}>🔗</div>
+      <div style={{fontWeight:600,marginBottom:8}}>Lenken er ugyldig</div>
+      <div style={{color:'var(--fg-muted)',fontSize:14}}>Få en ny lenke fra treneren din.</div>
+    </div>
+  );
+  if (!utover) return <div className="app" style={{textAlign:'center',paddingTop:80,color:'var(--fg-muted)'}}>Laster…</div>;
+
+  const iDag = new Date().toISOString().slice(0,10);
+  const dagensOkt = plan.find(o => o.dato === iDag);
+  const kommende = plan.filter(o => o.dato > iDag).slice(0,4);
+
+  async function analyser(e) {
+    e.preventDefault();
+    if (!tekst.trim()) return;
+    setAnalyserer(true);
+    const res = await fetch(`/utovere/${uid}/logg/parse`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({tekst, dato: new Date().toISOString().split('T')[0]}),
+    });
+    if (res.ok) {
+      setUtkast(await res.json());
+    } else {
+      setFeil('Klarte ikke analysere teksten. Prøv igjen.');
+    }
+    setAnalyserer(false);
+  }
+
+  async function lagreUtkast() {
+    if (!utkast) return;
+    setLaster(true);
+    const res = await fetch(`/utovere/${uid}/logg/direkte`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({...utkast, planlagt_id: dagensOkt?.id || null}),
+    });
+    if (res.ok) {
+      const o = await res.json();
+      setSisteOkt(o);
+      setUtkast(null);
+      setTekst('');
+      const nyLogg = await fetch(`/utovere/${uid}/logg`).then(r=>r.json());
+      setLogg(nyLogg);
+    } else {
+      setFeil('Noe gikk galt ved lagring.');
+    }
+    setLaster(false);
+  }
+
+  function oppdaterOvelse(i, felt, verdi) {
+    setUtkast(prev => ({...prev, ovelser: prev.ovelser.map((o,j) => j===i ? {...o, [felt]:verdi} : o)}));
+  }
+
+  function startLytting() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    const rec = new SR();
+    rec.lang = 'nb-NO';
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.onstart = () => setLytter(true);
+    rec.onend = () => setLytter(false);
+    rec.onerror = () => setLytter(false);
+    rec.onresult = e => setTekst(prev => (prev ? prev + ' ' : '') + e.results[0][0].transcript);
+    rec.start();
+  }
+
+  async function loggOkt(e, planlagtId) {
+    e.preventDefault();
+    if (!tekst.trim()) return;
+    setLaster(true); setFeil('');
+    const res = await fetch(`/utovere/${uid}/logg`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({tekst, planlagt_id: planlagtId||null}),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      setFeil(err.detail||'Noe gikk galt');
+    } else {
+      const o = await res.json();
+      setSisteOkt(o);
+      setTekst('');
+      const nyLogg = await fetch(`/utovere/${uid}/logg`).then(r=>r.json());
+      setLogg(nyLogg);
+    }
+    setLaster(false);
+  }
+
+  return (
+    <div className="app">
+      <div className="topp">
+        <div className="logo">Treningsdagbok</div>
+        <div className="navn-pill">{utover.navn}</div>
+      </div>
+
+      {/* Dagens økt */}
+      {dagensOkt ? (
+        <div>
+          <div className="seksjons-hd">I dag</div>
+          <div className="dagens-okt">
+            <div className="dagens-label">{TYPE_LABEL[dagensOkt.type]||dagensOkt.type}</div>
+            <div className="dagens-tittel">{dagensOkt.tittel}</div>
+            <div className="dagens-meta">
+              {dagensOkt.minutter && <span>⏱ {dagensOkt.minutter} min</span>}
+              {dagensOkt.intensitet && <span>{dagensOkt.intensitet}</span>}
+            </div>
+            {dagensOkt.beskrivelse && <div className="dagens-beskrivelse">{dagensOkt.beskrivelse}</div>}
+            <button className="logg-denne-btn" onClick={()=>{
+              setTekst(prev => prev || `Gjennomførte ${dagensOkt.tittel}: `);
+              setTimeout(()=>loggRef.current?.scrollIntoView({behavior:'smooth',block:'center'}),50);
+            }}>
+              ✓ Logg denne økten
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="card"><div className="ingen-okt">Ingen økt planlagt for i dag</div></div>
+      )}
+
+      {/* Kommende */}
+      {kommende.length > 0 && (
+        <div className="card">
+          <div className="seksjons-hd">Kommende</div>
+          {kommende.map(o => {
+            const kd = formatKortDato(o.dato);
+            return (
+              <div key={o.id} className="plan-item">
+                <div className="dato-badge">
+                  <div className="dato-dag">{kd.dag}</div>
+                  <div className="dato-num">{kd.num}</div>
+                </div>
+                <div className="plan-info">
+                  <div className="plan-tittel">{o.tittel}</div>
+                  <div className="plan-meta">
+                    <Badge type={o.type} cls={o.type}/>
+                    {o.intensitet && <span className={`badge badge-${o.intensitet}`}>{o.intensitet}</span>}
+                    {o.minutter && <span>⏱ {o.minutter} min</span>}
+                  </div>
+                  {o.beskrivelse && <div style={{fontSize:12,color:'var(--fg-muted)',marginTop:4}}>{o.beskrivelse}</div>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Logg økt */}
+      <div className="card" ref={loggRef}>
+        {!utkast ? (
+          <form className="logg-form" onSubmit={analyser}>
+            <label>Logg økt</label>
+            <div className="logg-input-rad">
+              <textarea
+                value={tekst}
+                onChange={e=>setTekst(e.target.value)}
+                placeholder="Beskriv hva du trente – si det eller skriv det. F.eks. «Trente benkpress 3×10 på 100 kg og skulderpress 60 kg»"
+                disabled={analyserer}
+                rows={3}
+              />
+              {(window.SpeechRecognition||window.webkitSpeechRecognition) && (
+                <button type="button" className={`mic-btn${lytter?' lytter':''}`} onClick={startLytting} title="Tal inn">
+                  🎤
+                </button>
+              )}
+            </div>
+            <div className="logg-footer">
+              <span className="logg-hint">{lytter ? '🔴 Lytter…' : 'AI strukturerer automatisk.'}</span>
+              <button className="btn btn-primary" type="submit" disabled={analyserer||!tekst.trim()}>
+                {analyserer ? <><span className="spinner"/> Analyserer…</> : 'Analyser →'}
+              </button>
+            </div>
+            {feil && <div className="feil">⚠ {feil}</div>}
+          </form>
+        ) : (
+          <div className="utkast-seksjon">
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:4}}>
+              <label style={{fontSize:12,fontWeight:700,textTransform:'uppercase',letterSpacing:'.04em',color:'var(--fg-muted)'}}>
+                {utkast.tittel}
+              </label>
+              <button className="fjern-btn" style={{fontSize:13,color:'var(--fg-muted)'}} onClick={()=>{setUtkast(null);setFeil('');}}>
+                ← Endre tekst
+              </button>
+            </div>
+
+            {/* Meta-felter */}
+            <div className="utkast-meta-row">
+              <div className="meta-felt">
+                <span className="meta-etikett">Intensitet</span>
+                <select value={utkast.intensitet} onChange={e=>setUtkast(p=>({...p, intensitet:e.target.value}))}>
+                  <option value="rolig">Rolig</option>
+                  <option value="moderat">Moderat</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+              <div className="meta-felt">
+                <span>⏱</span>
+                <input type="number" min="0" value={utkast.minutter||''} onChange={e=>setUtkast(p=>({...p, minutter:parseInt(e.target.value)||0}))} placeholder="0" />
+                <span className="meta-etikett">min</span>
+              </div>
+              {(utkast.km > 0 || ['lop','sykkel','gange'].includes(utkast.type)) && (
+                <div className="meta-felt">
+                  <span>📍</span>
+                  <input type="number" min="0" step="0.1" value={utkast.km||''} onChange={e=>setUtkast(p=>({...p, km:parseFloat(e.target.value)||0}))} placeholder="0" />
+                  <span className="meta-etikett">km</span>
+                </div>
+              )}
+              {utkast.rpe > 0 && (
+                <div className="meta-felt">
+                  <span className="meta-etikett">RPE</span>
+                  <input type="number" min="1" max="10" value={utkast.rpe||''} onChange={e=>setUtkast(p=>({...p, rpe:parseInt(e.target.value)||0}))} />
+                  <span className="meta-etikett">/10</span>
+                </div>
+              )}
+            </div>
+
+            {/* Øvelser */}
+            {utkast.ovelser && utkast.ovelser.length > 0 && (
+              <div className="ovelse-liste">
+                {utkast.ovelser.map((ov, i) => (
+                  <div key={i} className="ovelse-rad">
+                    <input className="ovelse-navn-input" value={ov.navn}
+                      onChange={e=>oppdaterOvelse(i,'navn',e.target.value)} placeholder="Øvelse" />
+                    <input className="ovelse-tall-input" type="number" min="1" value={ov.sett||''}
+                      onChange={e=>oppdaterOvelse(i,'sett',parseInt(e.target.value)||0)} placeholder="s" title="Sett" />
+                    <span className="ovelse-sep">×</span>
+                    <input className="ovelse-tall-input" type="number" min="1" value={ov.reps||''}
+                      onChange={e=>oppdaterOvelse(i,'reps',parseInt(e.target.value)||0)} placeholder="r" title="Reps" />
+                    <span className="ovelse-sep">@</span>
+                    <input className="ovelse-vekt-input" type="number" min="0" step="0.5" value={ov.vekt_kg||''}
+                      onChange={e=>oppdaterOvelse(i,'vekt_kg',parseFloat(e.target.value)||0)} placeholder="kg" title="Kg" />
+                    <button className="fjern-btn" onClick={()=>setUtkast(p=>({...p, ovelser:p.ovelser.filter((_,j)=>j!==i)}))}>×</button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button className="btn btn-secondary" style={{alignSelf:'flex-start',fontSize:13,padding:'6px 12px'}}
+              onClick={()=>setUtkast(p=>({...p, ovelser:[...(p.ovelser||[]),{navn:'',sett:3,reps:10,vekt_kg:0,notat:''}]}))}>
+              + Øvelse
+            </button>
+
+            {utkast.noter && <div className="okt-noter" style={{fontSize:13,color:'var(--fg-muted)',fontStyle:'italic'}}>{utkast.noter}</div>}
+
+            <div className="logg-footer">
+              <span/>
+              <button className="btn btn-primary" onClick={lagreUtkast} disabled={laster}>
+                {laster ? <><span className="spinner"/> Lagrer…</> : '✓ Logg økt'}
+              </button>
+            </div>
+            {feil && <div className="feil">⚠ {feil}</div>}
+          </div>
+        )}
+      </div>
+
+      {/* Nettopp logget */}
+      {sisteOkt && (
+        <div className="card">
+          <div className="siste-header">Nettopp logget</div>
+          <div className="okt-kort">
+            <div className="okt-row">
+              <Badge type={sisteOkt.type} cls={sisteOkt.type}/>
+              <span className={`badge badge-${sisteOkt.intensitet}`}>{sisteOkt.intensitet}</span>
+            </div>
+            <div className="okt-tittel">{sisteOkt.tittel}</div>
+            {sisteOkt.ovelser && sisteOkt.ovelser.length > 0 && (
+              <div className="ovelse-liste" style={{margin:'8px 0'}}>
+                {sisteOkt.ovelser.map((ov, i) => (
+                  <div key={i} className="ovelse-rad-vis">
+                    <span className="ovelse-navn">{ov.navn}</span>
+                    {ov.sett > 0 && <span className="ovelse-sett">{ov.sett}×{ov.reps}</span>}
+                    {ov.vekt_kg > 0 && <span className="ovelse-vekt">{ov.vekt_kg} kg</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+            {sisteOkt.noter && <div className="okt-noter">{sisteOkt.noter}</div>}
+            <div className="okt-meta">
+              {sisteOkt.minutter>0 && <span>⏱ {sisteOkt.minutter} min</span>}
+              {sisteOkt.km>0 && <span>📍 {sisteOkt.km} km</span>}
+              {sisteOkt.rpe>0 && <span>RPE {sisteOkt.rpe}/10</span>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Kroppskart */}
+      <KroppKart logg={logg} />
+
+      {/* Belastningsgraf */}
+      <BelastningsGraf logg={logg} />
+
+      {/* Historikk */}
+      {logg.length > 0 && (
+        <div>
+          <div className="seksjons-hd">Mine loggede økter</div>
+          {logg.map(o => (
+            <div key={o.id} className="okt-kort">
+              <div className="okt-row">
+                <Badge type={o.type} cls={o.type}/>
+                <span className={`badge badge-${o.intensitet}`}>{o.intensitet}</span>
+                <span className="okt-dato">{formatDato(o.dato)}</span>
+              </div>
+              <div className="okt-tittel">{o.tittel}</div>
+              {o.ovelser && o.ovelser.length > 0 && (
+                <div className="ovelse-liste" style={{margin:'8px 0'}}>
+                  {o.ovelser.map((ov, i) => (
+                    <div key={i} className="ovelse-rad-vis">
+                      <span className="ovelse-navn">{ov.navn}</span>
+                      {ov.sett > 0 && <span className="ovelse-sett">{ov.sett}×{ov.reps}</span>}
+                      {ov.vekt_kg > 0 && <span className="ovelse-vekt">{ov.vekt_kg} kg</span>}
+                      {ov.notat && <span style={{fontSize:12,color:'var(--fg-muted)',fontStyle:'italic'}}>{ov.notat}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {o.noter && <div className="okt-noter">{o.noter}</div>}
+              <div className="okt-meta">
+                {o.minutter>0&&<span>⏱ {o.minutter} min</span>}
+                {o.km>0&&<span>📍 {o.km} km</span>}
+                {o.rpe>0&&<span>RPE {o.rpe}/10</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <FloatChat uid={uid} navn={utover.navn}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>

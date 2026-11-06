@@ -1,0 +1,472 @@
+<title>Treningsdagbok</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+
+<style>
+/* ─── Design tokens — skogssti-palett ─── */
+:root {
+  --bg:          #F5F6F2;
+  --surface:     #FFFFFF;
+  --surface-2:   #EEEEE9;
+  --border:      #E0E2DC;
+  --fg:          #1B211A;
+  --fg-muted:    #6A7066;
+  --accent:      #2D6A4F;
+  --accent-h:    #225540;
+  --accent-fg:   #FFFFFF;
+  --badge-bg:    #E8F2EC;
+  --badge-fg:    #1B4634;
+  --red:         #C0392B;
+  --shadow-sm:   0 1px 2px rgba(0,0,0,.05);
+  --shadow:      0 2px 8px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --r:           14px;
+  --r-sm:        8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:        #131611;
+    --surface:   #1C2019;
+    --surface-2: #252922;
+    --border:    #2E3329;
+    --fg:        #ECF0E8;
+    --fg-muted:  #8A9187;
+    --accent:    #52B788;
+    --accent-h:  #3EA373;
+    --accent-fg: #091510;
+    --badge-bg:  #182A1F;
+    --badge-fg:  #74C69D;
+    --red:       #E74C3C;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    --shadow:    0 2px 8px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:        #131611;
+  --surface:   #1C2019;
+  --surface-2: #252922;
+  --border:    #2E3329;
+  --fg:        #ECF0E8;
+  --fg-muted:  #8A9187;
+  --accent:    #52B788;
+  --accent-h:  #3EA373;
+  --accent-fg: #091510;
+  --badge-bg:  #182A1F;
+  --badge-fg:  #74C69D;
+  --red:       #E74C3C;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  --shadow:    0 2px 8px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+
+/* ─── Reset & base ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+
+/* ─── Layout ─── */
+.app {
+  max-width: 680px;
+  margin: 0 auto;
+  padding-block: 40px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ─── Header ─── */
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.header-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--fg);
+  letter-spacing: -.02em;
+}
+.header-subtitle {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+/* ─── Cards ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+/* ─── Logg-form ─── */
+.logg-form { display: flex; flex-direction: column; gap: 12px }
+.logg-form label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-muted);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.logg-form textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  transition: border-color .15s;
+  outline: none;
+}
+.logg-form textarea:focus { border-color: var(--accent) }
+.logg-form textarea::placeholder { color: var(--fg-muted); opacity: .7 }
+.form-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px }
+.hint { font-size: 13px; color: var(--fg-muted); font-style: italic }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: none;
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, opacity .15s;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: var(--accent-h) }
+.btn:disabled { opacity: .55; cursor: not-allowed }
+.btn-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg) } }
+.feil { color: var(--red); font-size: 13px }
+
+/* ─── Siste økt ─── */
+.siste-header {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.siste-header::before {
+  content: '';
+  display: block; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--accent);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ─── Statistikk ─── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+}
+.stat-tile {
+  background: var(--surface-2);
+  border-radius: var(--r-sm);
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.stat-num {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--fg);
+  line-height: 1.1;
+}
+.stat-label { font-size: 12px; color: var(--fg-muted) }
+.stats-period { font-size: 12px; color: var(--fg-muted); margin-bottom: 12px }
+
+/* ─── Økt-kort ─── */
+.okt-liste { display: flex; flex-direction: column; gap: 10px }
+.okt-kort {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.okt-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap }
+.okt-tittel { font-weight: 600; font-size: 15px }
+.okt-noter { font-size: 14px; color: var(--fg-muted) }
+.okt-meta {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  font-size: 13px; font-variant-numeric: tabular-nums; color: var(--fg-muted);
+}
+.okt-dato { font-size: 13px; color: var(--fg-muted); margin-left: auto }
+.okt-empty { text-align: center; padding: 32px 0; color: var(--fg-muted); font-size: 14px }
+
+/* ─── Tags ─── */
+.tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 100px;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: .02em;
+}
+.tag-lop    { background: #DBEAFE; color: #1D4ED8 }
+.tag-styrke { background: #FEF3C7; color: #92400E }
+.tag-sykkel { background: #F3E8FF; color: #6B21A8 }
+.tag-gange  { background: #DCFCE7; color: #15803D }
+.tag-padel  { background: #FFE4E6; color: #9F1239 }
+.tag-fotball{ background: #FEF9C3; color: #713F12 }
+.tag-annet  { background: var(--surface-2); color: var(--fg-muted) }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tag-lop    { background: #1E3A5F; color: #93C5FD }
+  :root:not([data-theme="light"]) .tag-styrke { background: #3D2E0A; color: #FCD34D }
+  :root:not([data-theme="light"]) .tag-sykkel { background: #2E1A45; color: #C4B5FD }
+  :root:not([data-theme="light"]) .tag-gange  { background: #14352A; color: #86EFAC }
+  :root:not([data-theme="light"]) .tag-padel  { background: #3B1219; color: #FDA4AF }
+  :root:not([data-theme="light"]) .tag-fotball{ background: #3A2A04; color: #FDE68A }
+}
+:root[data-theme="dark"] .tag-lop    { background: #1E3A5F; color: #93C5FD }
+:root[data-theme="dark"] .tag-styrke { background: #3D2E0A; color: #FCD34D }
+:root[data-theme="dark"] .tag-sykkel { background: #2E1A45; color: #C4B5FD }
+:root[data-theme="dark"] .tag-gange  { background: #14352A; color: #86EFAC }
+:root[data-theme="dark"] .tag-padel  { background: #3B1219; color: #FDA4AF }
+:root[data-theme="dark"] .tag-fotball{ background: #3A2A04; color: #FDE68A }
+
+/* ─── Seksjon-header ─── */
+.seksjon-header {
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--fg-muted);
+  margin-bottom: 10px;
+}
+
+.intensitet-badge {
+  display: inline-block; padding: 1px 7px;
+  border-radius: 100px; font-size: 11px; font-weight: 600;
+  background: var(--badge-bg); color: var(--badge-fg);
+}
+
+@media (max-width: 480px) {
+  .app { padding-block: 24px 60px; gap: 20px }
+  .header-title { font-size: 1.6rem }
+  .form-footer { flex-direction: column; align-items: flex-start }
+}
+</style>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+
+const TYPE_LABEL = {
+  lop: 'Løp', styrke: 'Styrke', sykkel: 'Sykkel',
+  padel: 'Padel', fotball: 'Fotball', gange: 'Gange', annet: 'Annet',
+};
+const TYPE_CSS = {
+  lop: 'tag-lop', styrke: 'tag-styrke', sykkel: 'tag-sykkel',
+  gange: 'tag-gange', padel: 'tag-padel', fotball: 'tag-fotball', annet: 'tag-annet',
+};
+
+function formatDato(datoStr) {
+  try {
+    const d = new Date(datoStr + 'T12:00:00');
+    return d.toLocaleDateString('nb-NO', { weekday: 'long', day: 'numeric', month: 'long' });
+  } catch { return datoStr; }
+}
+
+function TypeTag({ type }) {
+  return (
+    <span className={`tag ${TYPE_CSS[type] || 'tag-annet'}`}>
+      {TYPE_LABEL[type] || type}
+    </span>
+  );
+}
+
+function OktKort({ okt }) {
+  return (
+    <div className="okt-kort">
+      <div className="okt-row">
+        <TypeTag type={okt.type} />
+        <span className="intensitet-badge">{okt.intensitet}</span>
+        <span className="okt-dato">{formatDato(okt.dato)}</span>
+      </div>
+      <div className="okt-tittel">{okt.tittel}</div>
+      {okt.noter && <div className="okt-noter">{okt.noter}</div>}
+      <div className="okt-meta">
+        {okt.minutter > 0 && <span>⏱ {okt.minutter} min</span>}
+        {okt.km > 0 && <span>📍 {okt.km} km</span>}
+        {okt.rpe > 0 && <span>RPE {okt.rpe}/10</span>}
+      </div>
+    </div>
+  );
+}
+
+function Statistikk({ okter }) {
+  const nå = new Date();
+  const dagNr = nå.getDay() === 0 ? 6 : nå.getDay() - 1; // 0=man
+  const ukeSlutt = new Date(nå);
+  ukeSlutt.setHours(23, 59, 59);
+  const ukeStart = new Date(nå);
+  ukeStart.setDate(nå.getDate() - dagNr);
+  ukeStart.setHours(0, 0, 0, 0);
+
+  const dennUka = okter.filter(o => {
+    const d = new Date(o.dato + 'T12:00:00');
+    return d >= ukeStart && d <= ukeSlutt;
+  });
+
+  const totMin = dennUka.reduce((s, o) => s + (o.minutter || 0), 0);
+  const totKm  = dennUka.reduce((s, o) => s + (o.km || 0), 0);
+  const antall = dennUka.length;
+
+  const ukeLabel = ukeStart.toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' }) +
+                   ' – ' + ukeSlutt.toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' });
+
+  return (
+    <div className="card">
+      <div className="seksjon-header">Denne uken</div>
+      <div className="stats-period">{ukeLabel}</div>
+      <div className="stats-grid">
+        <div className="stat-tile">
+          <div className="stat-num">{antall}</div>
+          <div className="stat-label">Økter</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-num">{totMin > 0 ? totMin : '–'}</div>
+          <div className="stat-label">Minutter</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-num">{totKm > 0 ? totKm.toFixed(1) : '–'}</div>
+          <div className="stat-label">Kilometer</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [tekst, setTekst] = useState('');
+  const [laster, setLaster] = useState(false);
+  const [feil, setFeil] = useState('');
+  const [sisteOkt, setSisteOkt] = useState(null);
+  const [okter, setOkter] = useState([]);
+
+  const lastOkter = useCallback(async () => {
+    try {
+      const res = await fetch('/okter');
+      if (res.ok) setOkter(await res.json());
+    } catch {}
+  }, []);
+
+  useEffect(() => { lastOkter(); }, [lastOkter]);
+
+  async function loggOkt(e) {
+    e.preventDefault();
+    if (!tekst.trim()) return;
+    setLaster(true);
+    setFeil('');
+    try {
+      const res = await fetch('/okter/logg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tekst }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || 'Noe gikk galt');
+      }
+      const okt = await res.json();
+      setSisteOkt(okt);
+      setTekst('');
+      await lastOkter();
+    } catch (err) {
+      setFeil(err.message || 'Fikk ikke kontakt med serveren');
+    } finally {
+      setLaster(false);
+    }
+  }
+
+  return (
+    <div className="app">
+      <header className="header">
+        <h1 className="header-title">Treningsdagbok</h1>
+        <span className="header-subtitle">Skriv, AI strukturerer</span>
+      </header>
+
+      <div className="card">
+        <form className="logg-form" onSubmit={loggOkt}>
+          <label htmlFor="okt-input">Hva trente du?</label>
+          <textarea
+            id="okt-input"
+            value={tekst}
+            onChange={e => setTekst(e.target.value)}
+            placeholder="F.eks. «Løp 6 km på 45 min, litt over moderat tempo. Kjentes bra i beina.»"
+            disabled={laster}
+          />
+          <div className="form-footer">
+            <span className="hint">AI-en henter ut type, varighet og intensitet.</span>
+            <button className="btn" type="submit" disabled={laster || !tekst.trim()}>
+              {laster && <span className="btn-spinner" />}
+              {laster ? 'Analyserer…' : 'Logg økt'}
+            </button>
+          </div>
+          {feil && <div className="feil">⚠ {feil}</div>}
+        </form>
+      </div>
+
+      {sisteOkt && (
+        <div className="card">
+          <div className="siste-header">Nettopp logget</div>
+          <OktKort okt={sisteOkt} />
+        </div>
+      )}
+
+      {okter.length > 0 && <Statistikk okter={okter} />}
+
+      {okter.length > 0 && (
+        <div>
+          <div className="seksjon-header">Alle økter</div>
+          <div className="okt-liste">
+            {okter.map(o => <OktKort key={o.id} okt={o} />)}
+          </div>
+        </div>
+      )}
+
+      {okter.length === 0 && !sisteOkt && (
+        <div className="card">
+          <div className="okt-empty">
+            Ingen økter ennå — logg den første ovenfor!
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>

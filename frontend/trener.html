@@ -1,0 +1,565 @@
+<title>Trener – PT-coach</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+:root {
+  --bg: #F0F2EC; --surface: #fff; --surface-2: #E8EBE4;
+  --border: #DDE0D8; --fg: #1A201A; --fg-muted: #667063;
+  --accent: #2D6A4F; --accent-h: #225540; --accent-fg: #fff;
+  --red: #C0392B; --amber: #D97706;
+  --shadow: 0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --r: 12px; --r-sm: 7px; --sidebar: 260px;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111410;--surface:#191C18;--surface-2:#21251F;--border:#2A2E28;
+  --fg:#EBF0E8;--fg-muted:#86907F;--accent:#52B788;--accent-h:#3EA373;--accent-fg:#091510;
+  --shadow:0 1px 3px rgba(0,0,0,.3);color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#111410;--surface:#191C18;--surface-2:#21251F;--border:#2A2E28;
+  --fg:#EBF0E8;--fg-muted:#86907F;--accent:#52B788;--accent-h:#3EA373;--accent-fg:#091510;
+  --shadow:0 1px 3px rgba(0,0,0,.3);color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.5}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:inherit}
+
+/* Layout */
+.layout{display:flex;height:100vh;overflow:hidden}
+.sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);background:var(--surface);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;
+}
+.sidebar-header{
+  padding:16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:400}
+.logo span{color:var(--accent)}
+.sidebar-list{flex:1;overflow-y:auto;padding:8px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.main-header{
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  background:var(--surface);display:flex;align-items:center;gap:12px;
+}
+.main-header h2{font-size:1rem;font-weight:600}
+.main-body{flex:1;display:flex;overflow:hidden}
+.panel{flex:1;overflow-y:auto;padding:20px}
+.chat-panel{
+  width:300px;min-width:300px;border-left:1px solid var(--border);
+  display:flex;flex-direction:column;background:var(--surface);
+}
+
+/* Utøver-kort i sidebar */
+.utover-item{
+  padding:10px 12px;border-radius:var(--r-sm);cursor:pointer;
+  display:flex;align-items:center;gap:10px;margin-bottom:2px;
+  transition:background .12s;
+}
+.utover-item:hover{background:var(--surface-2)}
+.utover-item.aktiv{background:var(--accent);color:var(--accent-fg)}
+.utover-item.aktiv .sub{color:rgba(255,255,255,.7)}
+.avatar{
+  width:32px;height:32px;border-radius:50%;background:var(--accent);
+  color:var(--accent-fg);display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+}
+.utover-item.aktiv .avatar{background:rgba(255,255,255,.25);color:#fff}
+.utover-navn{font-weight:600;font-size:13px}
+.sub{font-size:11px;color:var(--fg-muted)}
+.rpe-dot{width:7px;height:7px;border-radius:50%;margin-left:auto;flex-shrink:0}
+.rpe-rolig{background:#22C55E}.rpe-moderat{background:#F59E0B}.rpe-hard{background:#EF4444}.rpe-ingen{background:var(--border)}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;padding:12px 20px 0;border-bottom:1px solid var(--border);background:var(--surface)}
+.tab{
+  padding:8px 14px;border-radius:var(--r-sm) var(--r-sm) 0 0;
+  font-size:13px;font-weight:500;cursor:pointer;color:var(--fg-muted);
+  border:1px solid transparent;border-bottom:none;
+  transition:color .12s,background .12s;
+}
+.tab.aktiv{background:var(--bg);color:var(--fg);border-color:var(--border);margin-bottom:-1px}
+
+/* Kort */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:10px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.card-title{font-weight:600;font-size:14px}
+.okt-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.okt-meta{display:flex;gap:10px;font-size:12px;color:var(--fg-muted);font-variant-numeric:tabular-nums}
+.badge{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600}
+.badge-lop{background:#DBEAFE;color:#1D4ED8}.badge-styrke{background:#FEF3C7;color:#92400E}
+.badge-sykkel{background:#F3E8FF;color:#6B21A8}.badge-gange{background:#DCFCE7;color:#15803D}
+.badge-padel{background:#FFE4E6;color:#9F1239}.badge-annet{background:var(--surface-2);color:var(--fg-muted)}
+.badge-rolig{background:#DCFCE7;color:#166534}.badge-moderat{background:#FEF3C7;color:#92400E}.badge-hard{background:#FEE2E2;color:#991B1B}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .badge-lop{background:#1E3A5F;color:#93C5FD}
+:root:not([data-theme="light"]) .badge-styrke{background:#3D2E0A;color:#FCD34D}
+:root:not([data-theme="light"]) .badge-rolig{background:#14352A;color:#86EFAC}
+:root:not([data-theme="light"]) .badge-moderat{background:#3A2A04;color:#FDE68A}
+:root:not([data-theme="light"]) .badge-hard{background:#3B1219;color:#FDA4AF}}
+:root[data-theme="dark"] .badge-lop{background:#1E3A5F;color:#93C5FD}
+:root[data-theme="dark"] .badge-styrke{background:#3D2E0A;color:#FCD34D}
+:root[data-theme="dark"] .badge-rolig{background:#14352A;color:#86EFAC}
+:root[data-theme="dark"] .badge-moderat{background:#3A2A04;color:#FDE68A}
+:root[data-theme="dark"] .badge-hard{background:#3B1219;color:#FDA4AF}
+
+/* Skjema */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:4px}
+label{font-size:12px;font-weight:600;color:var(--fg-muted);text-transform:uppercase;letter-spacing:.04em}
+input,select,textarea{
+  padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);
+  background:var(--bg);color:var(--fg);outline:none;transition:border-color .12s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:60px}
+
+/* Knapper */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r-sm);border:none;font-weight:600;cursor:pointer;font-size:13px;transition:background .12s}
+.btn-primary{background:var(--accent);color:var(--accent-fg)}.btn-primary:hover{background:var(--accent-h)}
+.btn-ghost{background:transparent;color:var(--fg-muted);border:1px solid var(--border)}.btn-ghost:hover{background:var(--surface-2)}
+.btn-danger{background:#FEE2E2;color:var(--red)}.btn-danger:hover{background:#FECACA}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-sm{padding:5px 10px;font-size:12px}
+
+/* Chat */
+.chat-header{padding:12px 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:13px}
+.chat-meldinger{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.melding{max-width:85%;padding:8px 11px;border-radius:10px;font-size:13px;line-height:1.45}
+.melding.trener{align-self:flex-end;background:var(--accent);color:var(--accent-fg)}
+.melding.utover{align-self:flex-start;background:var(--surface-2);color:var(--fg)}
+.melding-tid{font-size:10px;opacity:.6;margin-top:2px}
+.chat-input{padding:10px;border-top:1px solid var(--border);display:flex;gap:6px}
+.chat-input textarea{flex:1;min-height:36px;max-height:80px;padding:6px 10px;font-size:13px}
+.chat-input .btn{align-self:flex-end;padding:6px 12px}
+
+/* Tom-tilstand */
+.tom{text-align:center;padding:40px 0;color:var(--fg-muted);font-size:13px}
+.tom-ikon{font-size:2rem;margin-bottom:8px}
+
+/* Ny utøver */
+.ny-utover-form{padding:12px;border-top:1px solid var(--border);display:flex;gap:6px}
+.ny-utover-form input{flex:1;padding:7px 10px}
+
+/* Spinner */
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Seksjonstittel */
+.seksjons-hd{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-muted);margin-bottom:10px}
+
+/* RPE-indikator */
+.rpe-bar{display:flex;gap:3px;margin-top:6px}
+.rpe-segment{flex:1;height:4px;border-radius:2px;background:var(--border)}
+.rpe-segment.on{background:var(--accent)}
+.rpe-segment.on.hard{background:#EF4444}
+.rpe-segment.on.moderat{background:#F59E0B}
+
+@media(max-width:700px){.sidebar{display:none}.chat-panel{display:none}}
+</style>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const {useState, useEffect, useRef, useCallback} = React;
+
+const TYPER = ['lop','styrke','sykkel','padel','fotball','gange','annet'];
+const TYPE_LABEL = {lop:'Løp',styrke:'Styrke',sykkel:'Sykkel',padel:'Padel',fotball:'Fotball',gange:'Gange',annet:'Annet'};
+const INTENS = ['rolig','moderat','hard'];
+
+function formatDato(d) {
+  if (!d) return '';
+  try { return new Date(d+'T12:00:00').toLocaleDateString('nb-NO',{weekday:'short',day:'numeric',month:'short'}); }
+  catch { return d; }
+}
+function formatTid(ts) {
+  if (!ts) return '';
+  try { return new Date(ts).toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'}); }
+  catch { return ''; }
+}
+function initialer(navn) {
+  return navn.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+}
+
+function Badge({type, cls}) {
+  return <span className={`badge badge-${cls||type}`}>{TYPE_LABEL[type]||type}</span>;
+}
+
+function RpeBar({rpe}) {
+  if (!rpe) return null;
+  const cls = rpe >= 8 ? 'hard' : rpe >= 5 ? 'moderat' : '';
+  return (
+    <div className="rpe-bar">
+      {Array.from({length:10},(_,i) => (
+        <div key={i} className={`rpe-segment${i<rpe?' on '+cls:''}`}/>
+      ))}
+    </div>
+  );
+}
+
+// ── Chat ────────────────────────────────────────────────────────────────────
+
+function Chat({utoverId, navn}) {
+  const [meldinger, setMeldinger] = useState([]);
+  const [tekst, setTekst] = useState('');
+  const [sender, setSender] = useState(false);
+  const bunnen = useRef(null);
+  const sisteRef = useRef(null);
+
+  const lastMeldinger = useCallback(async () => {
+    if (!utoverId) return;
+    const params = sisteRef.current ? `?etter=${encodeURIComponent(sisteRef.current)}` : '';
+    const res = await fetch(`/utovere/${utoverId}/meldinger${params}`);
+    if (!res.ok) return;
+    const nye = await res.json();
+    if (nye.length > 0) {
+      setMeldinger(prev => [...prev, ...nye]);
+      sisteRef.current = nye[nye.length-1].opprettet;
+    }
+  }, [utoverId]);
+
+  useEffect(() => {
+    setMeldinger([]);
+    sisteRef.current = null;
+    if (utoverId) lastMeldinger();
+  }, [utoverId]);
+
+  useEffect(() => {
+    if (!utoverId) return;
+    const id = setInterval(lastMeldinger, 4000);
+    return () => clearInterval(id);
+  }, [lastMeldinger, utoverId]);
+
+  useEffect(() => {
+    bunnen.current?.scrollIntoView({behavior:'smooth'});
+  }, [meldinger]);
+
+  async function send(e) {
+    e.preventDefault();
+    if (!tekst.trim() || sender) return;
+    setSender(true);
+    const res = await fetch(`/utovere/${utoverId}/meldinger`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({tekst, fra:'trener'}),
+    });
+    if (res.ok) {
+      const m = await res.json();
+      setMeldinger(prev => [...prev, m]);
+      sisteRef.current = m.opprettet;
+      setTekst('');
+    }
+    setSender(false);
+  }
+
+  if (!utoverId) return <div className="chat-panel"><div className="chat-header">Chat</div><div className="tom"><div className="tom-ikon">💬</div>Velg en utøver</div></div>;
+
+  return (
+    <div className="chat-panel">
+      <div className="chat-header">Chat – {navn}</div>
+      <div className="chat-meldinger">
+        {meldinger.length === 0 && <div className="tom" style={{fontSize:12}}>Ingen meldinger ennå</div>}
+        {meldinger.map(m => (
+          <div key={m.id}>
+            <div className={`melding ${m.fra}`}>{m.tekst}</div>
+            <div className="melding-tid" style={{textAlign: m.fra==='trener'?'right':'left'}}>{formatTid(m.opprettet)}</div>
+          </div>
+        ))}
+        <div ref={bunnen}/>
+      </div>
+      <form className="chat-input" onSubmit={send}>
+        <textarea
+          value={tekst}
+          onChange={e=>setTekst(e.target.value)}
+          placeholder="Skriv til utøveren…"
+          onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(e);}}}
+        />
+        <button className="btn btn-primary" type="submit" disabled={sender||!tekst.trim()}>
+          {sender ? <span className="spinner"/> : '→'}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+// ── Plan-tab ────────────────────────────────────────────────────────────────
+
+function PlanTab({utoverId}) {
+  const [plan, setPlan] = useState([]);
+  const [vis, setVis] = useState(false);
+  const [form, setForm] = useState({dato:'',type:'lop',tittel:'',minutter:'',intensitet:'rolig',beskrivelse:''});
+  const [lagrer, setLagrer] = useState(false);
+
+  const last = useCallback(async () => {
+    const res = await fetch(`/utovere/${utoverId}/plan`);
+    if (res.ok) setPlan(await res.json());
+  }, [utoverId]);
+
+  useEffect(() => { if (utoverId) last(); }, [last]);
+
+  async function leggTil(e) {
+    e.preventDefault();
+    setLagrer(true);
+    const res = await fetch(`/utovere/${utoverId}/plan`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({...form, minutter: form.minutter ? parseInt(form.minutter) : null}),
+    });
+    if (res.ok) { await last(); setVis(false); setForm({dato:'',type:'lop',tittel:'',minutter:'',intensitet:'rolig',beskrivelse:''}); }
+    setLagrer(false);
+  }
+
+  async function slett(id) {
+    await fetch(`/utovere/${utoverId}/plan/${id}`, {method:'DELETE'});
+    await last();
+  }
+
+  const kommende = plan.filter(o => o.dato >= new Date().toISOString().slice(0,10));
+  const tidligere = plan.filter(o => o.dato < new Date().toISOString().slice(0,10));
+
+  return (
+    <div>
+      <div style={{display:'flex',justifyContent:'flex-end',marginBottom:14}}>
+        <button className="btn btn-primary btn-sm" onClick={()=>setVis(!vis)}>
+          {vis ? 'Avbryt' : '+ Legg til økt'}
+        </button>
+      </div>
+
+      {vis && (
+        <div className="card" style={{marginBottom:16}}>
+          <div className="seksjons-hd" style={{marginBottom:12}}>Ny planlagt økt</div>
+          <form onSubmit={leggTil}>
+            <div className="form-grid">
+              <div className="form-group">
+                <label>Dato</label>
+                <input type="date" value={form.dato} required onChange={e=>setForm({...form,dato:e.target.value})}/>
+              </div>
+              <div className="form-group">
+                <label>Type</label>
+                <select value={form.type} onChange={e=>setForm({...form,type:e.target.value})}>
+                  {TYPER.map(t=><option key={t} value={t}>{TYPE_LABEL[t]}</option>)}
+                </select>
+              </div>
+              <div className="form-group form-full">
+                <label>Tittel</label>
+                <input value={form.tittel} required placeholder="F.eks. Rolig løp" onChange={e=>setForm({...form,tittel:e.target.value})}/>
+              </div>
+              <div className="form-group">
+                <label>Minutter</label>
+                <input type="number" value={form.minutter} placeholder="45" onChange={e=>setForm({...form,minutter:e.target.value})}/>
+              </div>
+              <div className="form-group">
+                <label>Intensitet</label>
+                <select value={form.intensitet} onChange={e=>setForm({...form,intensitet:e.target.value})}>
+                  {INTENS.map(i=><option key={i} value={i}>{i}</option>)}
+                </select>
+              </div>
+              <div className="form-group form-full">
+                <label>Beskrivelse</label>
+                <textarea value={form.beskrivelse} placeholder="Instrukser til utøveren…" onChange={e=>setForm({...form,beskrivelse:e.target.value})}/>
+              </div>
+            </div>
+            <button className="btn btn-primary" type="submit" disabled={lagrer}>
+              {lagrer ? <><span className="spinner"/> Lagrer…</> : 'Legg til'}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {kommende.length > 0 && (
+        <div>
+          <div className="seksjons-hd">Kommende</div>
+          {kommende.map(o => (
+            <div key={o.id} className="card">
+              <div className="okt-row">
+                <Badge type={o.type} cls={o.type}/>
+                <span className={`badge badge-${o.intensitet}`}>{o.intensitet}</span>
+                <span style={{marginLeft:'auto',fontSize:12,color:'var(--fg-muted)'}}>{formatDato(o.dato)}</span>
+                <button className="btn btn-danger btn-sm" onClick={()=>slett(o.id)}>✕</button>
+              </div>
+              <div style={{fontWeight:600,marginBottom:4}}>{o.tittel}</div>
+              {o.minutter && <div className="okt-meta"><span>⏱ {o.minutter} min</span></div>}
+              {o.beskrivelse && <div style={{fontSize:13,color:'var(--fg-muted)',marginTop:6}}>{o.beskrivelse}</div>}
+            </div>
+          ))}
+        </div>
+      )}
+      {tidligere.length > 0 && (
+        <div style={{marginTop:16}}>
+          <div className="seksjons-hd">Tidligere planlagte</div>
+          {tidligere.map(o => (
+            <div key={o.id} className="card" style={{opacity:.65}}>
+              <div className="okt-row">
+                <Badge type={o.type} cls={o.type}/>
+                <span style={{fontSize:12,color:'var(--fg-muted)'}}>{formatDato(o.dato)}</span>
+              </div>
+              <div style={{fontWeight:600}}>{o.tittel}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {plan.length === 0 && !vis && (
+        <div className="tom"><div className="tom-ikon">📋</div>Ingen planlagte økter ennå</div>
+      )}
+    </div>
+  );
+}
+
+// ── Logg-tab ────────────────────────────────────────────────────────────────
+
+function LoggTab({utoverId}) {
+  const [logg, setLogg] = useState([]);
+
+  useEffect(() => {
+    if (!utoverId) return;
+    fetch(`/utovere/${utoverId}/logg`).then(r=>r.json()).then(setLogg).catch(()=>{});
+  }, [utoverId]);
+
+  if (logg.length === 0) return <div className="tom"><div className="tom-ikon">📊</div>Ingen loggede økter ennå</div>;
+
+  return (
+    <div>
+      <div className="seksjons-hd">{logg.length} loggede økter</div>
+      {logg.map(o => (
+        <div key={o.id} className="card">
+          <div className="okt-row">
+            <Badge type={o.type} cls={o.type}/>
+            <span className={`badge badge-${o.intensitet}`}>{o.intensitet}</span>
+            <span style={{marginLeft:'auto',fontSize:12,color:'var(--fg-muted)'}}>{formatDato(o.dato)}</span>
+          </div>
+          <div style={{fontWeight:600,marginBottom:4}}>{o.tittel}</div>
+          {o.noter && <div style={{fontSize:13,color:'var(--fg-muted)',marginBottom:6}}>{o.noter}</div>}
+          <div className="okt-meta">
+            {o.minutter > 0 && <span>⏱ {o.minutter} min</span>}
+            {o.km > 0 && <span>📍 {o.km} km</span>}
+            {o.rpe > 0 && <span>RPE {o.rpe}/10</span>}
+          </div>
+          {o.rpe > 0 && <RpeBar rpe={o.rpe}/>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Utøver-detalj ────────────────────────────────────────────────────────────
+
+function UtoverDetalj({utover}) {
+  const [tab, setTab] = useState('plan');
+  const lenke = `${window.location.origin}/u/${utover.id}`;
+
+  return (
+    <div style={{display:'flex',flexDirection:'column',height:'100%'}}>
+      <div className="main-header">
+        <div className="avatar" style={{width:32,height:32,fontSize:13}}>{initialer(utover.navn)}</div>
+        <h2>{utover.navn}</h2>
+        <a href={lenke} target="_blank" className="btn btn-ghost btn-sm" style={{marginLeft:'auto'}}>
+          🔗 Utøverlenke
+        </a>
+      </div>
+      <div className="tabs">
+        {['plan','logg'].map(t=>(
+          <div key={t} className={`tab${tab===t?' aktiv':''}`} onClick={()=>setTab(t)}>
+            {t==='plan'?'📋 Plan':'📊 Logg'}
+          </div>
+        ))}
+      </div>
+      <div className="main-body">
+        <div className="panel">
+          {tab==='plan' && <PlanTab utoverId={utover.id}/>}
+          {tab==='logg' && <LoggTab utoverId={utover.id}/>}
+        </div>
+        <Chat utoverId={utover.id} navn={utover.navn}/>
+      </div>
+    </div>
+  );
+}
+
+// ── Sidebar ──────────────────────────────────────────────────────────────────
+
+function Sidebar({utovere, valgt, onVelg, onNy}) {
+  const [nyNavn, setNyNavn] = useState('');
+  const [legger, setLegger] = useState(false);
+
+  async function leggTil(e) {
+    e.preventDefault();
+    if (!nyNavn.trim()) return;
+    setLegger(true);
+    await onNy(nyNavn.trim());
+    setNyNavn('');
+    setLegger(false);
+  }
+
+  return (
+    <div className="sidebar">
+      <div className="sidebar-header">
+        <span className="logo">PT<span>-coach</span></span>
+        <a href="/" className="btn btn-ghost btn-sm" style={{fontSize:11}}>← Hjem</a>
+      </div>
+      <div className="sidebar-list">
+        <div className="seksjons-hd" style={{padding:'8px 4px 4px'}}>Utøvere</div>
+        {utovere.map(u => (
+          <div key={u.id} className={`utover-item${valgt?.id===u.id?' aktiv':''}`} onClick={()=>onVelg(u)}>
+            <div className="avatar">{initialer(u.navn)}</div>
+            <div>
+              <div className="utover-navn">{u.navn}</div>
+            </div>
+          </div>
+        ))}
+        {utovere.length === 0 && <div className="sub" style={{padding:'8px 4px',fontSize:12}}>Ingen utøvere ennå</div>}
+      </div>
+      <form className="ny-utover-form" onSubmit={leggTil}>
+        <input value={nyNavn} onChange={e=>setNyNavn(e.target.value)} placeholder="+ Ny utøver…"/>
+        <button className="btn btn-primary btn-sm" type="submit" disabled={legger||!nyNavn.trim()}>
+          {legger ? <span className="spinner"/> : 'Legg til'}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+// ── App ──────────────────────────────────────────────────────────────────────
+
+function App() {
+  const [utovere, setUtovere] = useState([]);
+  const [valgt, setValgt] = useState(null);
+
+  const lastUtovere = useCallback(async () => {
+    const res = await fetch('/utovere');
+    if (res.ok) {
+      const data = await res.json();
+      setUtovere(data);
+      if (data.length > 0 && !valgt) setValgt(data[0]);
+    }
+  }, []);
+
+  useEffect(() => { lastUtovere(); }, [lastUtovere]);
+
+  async function nyUtover(navn) {
+    const res = await fetch('/utovere', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({navn}),
+    });
+    if (res.ok) {
+      const u = await res.json();
+      setUtovere(prev => [...prev, u]);
+      setValgt(u);
+    }
+  }
+
+  return (
+    <div className="layout">
+      <Sidebar utovere={utovere} valgt={valgt} onVelg={setValgt} onNy={nyUtover}/>
+      <div className="main">
+        {valgt
+          ? <UtoverDetalj key={valgt.id} utover={valgt}/>
+          : <div className="tom" style={{margin:'auto'}}><div className="tom-ikon">👥</div>Legg til en utøver i sidemenyen</div>
+        }
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>

@@ -1,0 +1,122 @@
+<title>PT-coach</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+:root {
+  --bg: #F5F6F2; --surface: #fff; --border: #E0E2DC;
+  --fg: #1B211A; --fg-muted: #6A7066;
+  --accent: #2D6A4F; --accent-h: #225540; --accent-fg: #fff;
+  --shadow: 0 2px 8px rgba(0,0,0,.07);
+  --r: 14px; --r-sm: 8px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #131611; --surface: #1C2019; --border: #2E3329;
+  --fg: #ECF0E8; --fg-muted: #8A9187;
+  --accent: #52B788; --accent-h: #3EA373; --accent-fg: #091510;
+  --shadow: 0 2px 8px rgba(0,0,0,.3); color-scheme: dark;
+}}
+:root[data-theme="dark"] {
+  --bg: #131611; --surface: #1C2019; --border: #2E3329;
+  --fg: #ECF0E8; --fg-muted: #8A9187;
+  --accent: #52B788; --accent-h: #3EA373; --accent-fg: #091510;
+  --shadow: 0 2px 8px rgba(0,0,0,.3); color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--bg); color: var(--fg); font-size: 15px;
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: max(16px, env(safe-area-inset-left, 0px));
+}
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); box-shadow: var(--shadow);
+  padding: 40px 32px; width: 100%; max-width: 400px; text-align: center;
+}
+h1 { font-family: 'DM Serif Display', Georgia, serif; font-size: 2rem; font-weight: 400; margin-bottom: 8px }
+.sub { color: var(--fg-muted); font-size: 14px; margin-bottom: 32px }
+.btn-group { display: flex; flex-direction: column; gap: 10px }
+.btn {
+  display: block; width: 100%; padding: 14px;
+  border-radius: var(--r-sm); border: none; font-family: inherit;
+  font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none;
+  transition: background .15s;
+}
+.btn-primary { background: var(--accent); color: var(--accent-fg) }
+.btn-primary:hover { background: var(--accent-h) }
+.btn-secondary { background: var(--border); color: var(--fg) }
+.btn-secondary:hover { filter: brightness(.95) }
+.utover-form { display: flex; flex-direction: column; gap: 8px; text-align: left }
+.utover-form label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--fg-muted) }
+.utover-form input {
+  width: 100%; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  background: var(--bg); color: var(--fg); font-size: 14px; outline: none; transition: border-color .12s;
+}
+.utover-form input:focus { border-color: var(--accent) }
+.utover-form input::placeholder { color: var(--fg-muted); opacity: .6 }
+.feil { color: #C0392B; font-size: 12px; text-align: center }
+.tilbake { background: none; border: none; cursor: pointer; color: var(--fg-muted); font-size: 13px; text-decoration: underline; margin-top: 2px }
+</style>
+<div id="root"></div>
+<script type="text/babel">
+const {useState, useRef} = React;
+
+function App() {
+  const [visForm, setVisForm] = useState(false);
+  const [lenke, setLenke] = useState('');
+  const [feil, setFeil] = useState('');
+  const inputRef = useRef(null);
+
+  function gåTilUtøver(e) {
+    e.preventDefault();
+    setFeil('');
+    const trimmet = lenke.trim();
+    // Aksepter full URL eller bare UUID
+    const uuidMatch = trimmet.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+    if (!uuidMatch) {
+      setFeil('Fant ingen gyldig utøver-lenke. Lim inn lenken du fikk fra treneren.');
+      return;
+    }
+    window.location.href = '/u/' + uuidMatch[0];
+  }
+
+  function visUtøverForm() {
+    setVisForm(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  }
+
+  if (visForm) return (
+    <div className="card">
+      <h1>PT-coach</h1>
+      <p className="sub">Lim inn lenken du fikk fra treneren din</p>
+      <form className="utover-form" onSubmit={gåTilUtøver}>
+        <label>Din personlige lenke</label>
+        <input
+          ref={inputRef}
+          value={lenke}
+          onChange={e=>setLenke(e.target.value)}
+          placeholder="f.eks. http://…/u/abc123…"
+          autoComplete="off"
+        />
+        {feil && <div className="feil">{feil}</div>}
+        <button className="btn btn-primary" type="submit" style={{marginTop:4}}>Gå til min side →</button>
+        <button type="button" className="tilbake" onClick={()=>{setVisForm(false);setFeil('');}}>← Tilbake</button>
+      </form>
+    </div>
+  );
+
+  return (
+    <div className="card">
+      <h1>PT-coach</h1>
+      <p className="sub">Hvem er du?</p>
+      <div className="btn-group">
+        <a className="btn btn-primary" href="/trener">Jeg er trener</a>
+        <button className="btn btn-secondary" onClick={visUtøverForm}>Jeg er utøver →</button>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
